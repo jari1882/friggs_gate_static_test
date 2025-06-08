@@ -2,8 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { RemoteRunnable } from "@langchain/core/runnables/remote";
-import { applyPatch } from "@langchain/core/utils/json_patch";
 
 import { EmptyState } from "./EmptyState";
 import { ChatMessageBubble, Message } from "./ChatMessageBubble";
@@ -23,7 +21,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { ArrowUpIcon } from "@chakra-ui/icons";
-import { Select, Link } from "@chakra-ui/react";
+import { Select } from "@chakra-ui/react";
 import { Source } from "./SourceBubble";
 import { apiBaseUrl } from "../utils/constants";
 
@@ -40,6 +38,7 @@ const defaultLlmValue =
 
 export function ChatWindow(props: { conversationId: string }) {
   const conversationId = props.conversationId;
+  const userId = "user-" + Math.random().toString(36).substring(2, 11);
 
   const searchParams = useSearchParams();
 
@@ -79,7 +78,6 @@ export function ChatWindow(props: { conversationId: string }) {
     let accumulatedMessage = "";
     let runId: string | undefined = undefined;
     let sources: Source[] | undefined = undefined;
-    let messageIndex: number | null = null;
 
     let renderer = new Renderer();
     renderer.paragraph = (text) => {
@@ -96,85 +94,69 @@ export function ChatWindow(props: { conversationId: string }) {
         ? language
         : "plaintext";
       const highlightedCode = hljs.highlight(
-        validLanguage || "plaintext",
         code,
+        { language: validLanguage || "plaintext" },
       ).value;
       return `<pre class="highlight bg-gray-700" style="padding: 5px; border-radius: 5px; overflow: auto; overflow-wrap: anywhere; white-space: pre-wrap; max-width: 100%; display: block; line-height: 1.2"><code class="${language}" style="color: #d6e2ef; font-size: 12px; ">${highlightedCode}</code></pre>`;
     };
     marked.setOptions({ renderer });
     try {
-      const sourceStepName = "FindDocs";
-      let streamedResponse: Record<string, any> = {};
-      const remoteChain = new RemoteRunnable({
-        url: apiBaseUrl + "/chat",
-        options: {
-          timeout: 60000,
-        },
-      });
-      const llmDisplayName = llm ?? "openai_gpt_3_5_turbo";
-      const streamLog = await remoteChain.streamLog(
-        {
+      const bifrostPayload = {
+        input: {
+          version: "1.0",
           question: messageValue,
           chat_history: chatHistory,
-        },
-        {
-          configurable: {
-            llm: llmDisplayName,
-          },
-          tags: ["model:" + llmDisplayName],
           metadata: {
-            conversation_id: conversationId,
-            llm: llmDisplayName,
+            caller: "frontend_app",
+            purpose: "chat_request",
+            timestamp: new Date().toISOString(),
           },
+          session: {
+            user_id: userId,
+            context: {
+              conversation_id: conversationId,
+              llm: llm ?? "openai_gpt_3_5_turbo",
+            },
+          },
+          stream: false,
         },
-        {
-          includeNames: [sourceStepName],
-        },
-      );
-      for await (const chunk of streamLog) {
-        streamedResponse = applyPatch(streamedResponse, chunk.ops, undefined, false).newDocument;
-        if (
-          Array.isArray(
-            streamedResponse?.logs?.[sourceStepName]?.final_output?.output,
-          )
-        ) {
-          sources = streamedResponse.logs[
-            sourceStepName
-          ].final_output.output.map((doc: Record<string, any>) => ({
-            url: doc.metadata.source,
-            title: doc.metadata.title,
-          }));
-        }
-        if (streamedResponse.id !== undefined) {
-          runId = streamedResponse.id;
-        }
-        if (Array.isArray(streamedResponse?.streamed_output)) {
-          accumulatedMessage = streamedResponse.streamed_output.join("");
-        }
-        const parsedResult = marked.parse(accumulatedMessage);
+      };
 
-        setMessages((prevMessages) => {
-          let newMessages = [...prevMessages];
-          if (
-            messageIndex === null ||
-            newMessages[messageIndex] === undefined
-          ) {
-            messageIndex = newMessages.length;
-            newMessages.push({
-              id: Math.random().toString(),
-              content: parsedResult.trim(),
-              runId: runId,
-              sources: sources,
-              role: "assistant",
-            });
-          } else if (newMessages[messageIndex] !== undefined) {
-            newMessages[messageIndex].content = parsedResult.trim();
-            newMessages[messageIndex].runId = runId;
-            newMessages[messageIndex].sources = sources;
-          }
-          return newMessages;
-        });
+      const response = await fetch(apiBaseUrl + "/ask/invoke", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bifrostPayload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+      
+      if (data.output?.status === "failed") {
+        throw new Error(data.output?.error || "API request failed");
+      }
+
+      const answer = data.output?.answer || "No response received";
+      runId = data.output?.run_id || Math.random().toString();
+      
+      const parsedResult = marked.parse(answer);
+      accumulatedMessage = answer;
+
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages];
+        newMessages.push({
+          id: Math.random().toString(),
+          content: parsedResult.trim(),
+          runId: runId,
+          sources: sources,
+          role: "assistant",
+        });
+        return newMessages;
+      });
       setChatHistory((prevChatHistory) => [
         ...prevChatHistory,
         { human: messageValue, ai: accumulatedMessage },
@@ -220,7 +202,7 @@ export function ChatWindow(props: { conversationId: string }) {
           mb={1}
           color={"white"}
         >
-          Chat LangChain 🦜🔗
+          🧠 life-nervous-system 🧠
         </Heading>
         {messages.length > 0 ? (
           <Heading fontSize="md" fontWeight={"normal"} mb={1} color={"white"}>
@@ -234,10 +216,7 @@ export function ChatWindow(props: { conversationId: string }) {
             marginTop={"10px"}
             textAlign={"center"}
           >
-            Ask me anything about LangChain&apos;s{" "}
-            <Link href="https://python.langchain.com/" color={"blue.200"}>
-              Python documentation!
-            </Link>
+            Ask Frigg anything?
           </Heading>
         )}
         <div className="text-white flex flex-wrap items-center mt-4">
@@ -291,7 +270,7 @@ export function ChatWindow(props: { conversationId: string }) {
           value={input}
           maxRows={5}
           marginRight={"56px"}
-          placeholder="What does RunnablePassthrough.assign() do?"
+          placeholder="How can I help you today?"
           textColor={"white"}
           borderColor={"rgb(58, 58, 61)"}
           onChange={(e) => setInput(e.target.value)}
