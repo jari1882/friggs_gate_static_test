@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Complete Browser Example</title>
+
+    <!-- ✅ 2. CSS Styling -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+      body {
+        font-family: 'Roboto', sans-serif;
+        text-align: center;
+        margin-top: 80px;
+        background: #f7f7f7;
+      }
+      img {
+        width: 80px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+      }
+      input {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: 200px;
+      }
+      button {
+        padding: 8px 12px;
+        border-radius: 5px;
+        background: #28a745;
+        color: white;
+        border: none;
+        margin-left: 10px;
+      }
+      button:hover {
+        background: #1e7e34;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ✅ 1. HTML Structure -->
+    <img src="https://i.pravatar.cc/80" alt="Avatar" />
+    <h1>Get a Random Dog</h1>
+
+    <input id="userInput" type="text" placeholder="Say something..." />
+    <button onclick="handleSubmit()">Send</button>
+
+    <p id="response"></p>
+    <img id="dogImg" style="margin-top: 20px; display: none;" />
+
+    <!-- ✅ 3. JavaScript Logic + ✅ 4. Data Payloads + ✅ 6. Bootstrapping -->
+    <script>
+      function handleSubmit() {
+        const input = document.getElementById('userInput').value;
+        document.getElementById('response').textContent = `You said: ${input || '...nothing?'}`;
+
+        // ✅ Fetch external data (dog image)
+        fetch('https://dog.ceo/api/breeds/image/random')
+          .then(res => res.json())
+          .then(data => {
+            const img = document.getElementById('dogImg');
+            img.src = data.message;
+            img.style.display = 'block';
+          })
+          .catch(err => {
+            console.error('Failed to load image:', err);
+          });
+      }
+
+      // ✅ Simple runtime hook (like app startup logic)
+      window.onload = () => {
+        console.log('App ready');
+      };
+    </script>
+  </body>
+</html>

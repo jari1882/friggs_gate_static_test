@@ -195,7 +195,63 @@ Chrome and the server can now **talk privately and securely**.
 Next, Chrome sends the actual request:  
 **“Give me the homepage, please.”**
 
-# 📡 Step 3: Browser Sends HTTP Request
+
+# 🧠 Front-End Mental Model
+
+## Tech Stack (Conceptual Context)
+
+The front-end is built on **Next.js (13+) with React (18)**, using the App Router architecture.  
+Styling is handled by **Tailwind CSS**, **Chakra UI**, and **Emotion**.  
+Animations are provided by **Framer Motion**.  
+LLM interaction and text rendering are supported by **LangChain**, **LangSmith**, **Marked**, and **Highlight.js**.  
+The app is written in **TypeScript** and uses **GraphQL** for data queries.  
+It runs in a browser (Chrome) and is deployed via Vercel.  
+
+This context assumes real-time UI feedback, secure endpoints, and markdown/rendered output — all of which require secure, low-latency communication with a server.
+
+---
+
+## Step 0: User Initiates Request
+
+The user types a URL (e.g. `life-nervous-system.com`) into Chrome and presses Enter. Chrome:
+
+- Interprets the scheme (HTTP or HTTPS).
+- Applies **HSTS policies** — enforcing HTTPS if previously instructed or if the domain is preloaded.
+- Checks the local **DNS** and **HTTP cache** for existing data.
+
+If no cached result is valid, Chrome moves on to resolve the domain name.
+
+---
+
+## Step 1: DNS Resolution
+
+Chrome resolves the domain into an IP address:
+
+- Checks its internal DNS cache.
+- If absent, passes the query to the **OS resolver**.
+- The OS contacts upstream DNS servers:
+  - Root server → TLD server → Authoritative server.
+- The IP is returned to Chrome through the OS.
+
+With the IP address now available, Chrome begins establishing a connection.
+
+---
+
+## Step 2: Secure Connection to Server
+
+Chrome initiates a secure connection:
+
+1. **TCP Handshake** — Establishes a basic connection using SYN → SYN-ACK → ACK.
+2. **TLS Handshake** — Sets up encryption over the TCP channel:
+   - Chrome offers encryption options (ClientHello).
+   - Server responds with credentials and a certificate.
+   - Chrome verifies the certificate and establishes trust.
+   - Both sides derive a shared secret key without sending it directly.
+
+Once the secure channel is established, Chrome can safely send an HTTP request to fetch the application’s front-end.
+
+
+# Step 3: Browser Sends HTTP Request
 
 ## 🎯 What’s Happening  
 Now that the connection is secure, Chrome sends a message to the server saying:
