@@ -4,14 +4,6 @@
 
 # Table of Contents
 
-1. [System Architecture Overview](#1-system-architecture-overview)
-2. [Core Technology Stack](#2-core-technology-stack)
-3. [Application Architecture](#3-application-architecture)
-4. [Core Components Deep Dive](#4-core-components-deep-dive)
-5. [Data Flow and Communication](#5-data-flow-and-communication)
-6. [Styling and Visual Architecture](#6-styling-and-visual-architecture)
-7. [Development Workflow and Tooling](#7-development-workflow-and-tooling)
-8. [Extensibility and Future Architecture](#8-extensibility-and-future-architecture)
 
 ---
 
