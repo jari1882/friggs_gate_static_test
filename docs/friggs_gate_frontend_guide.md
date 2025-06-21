@@ -782,3 +782,10 @@ Together, these six are not just things the browser can use — they are the **m
 **Want to see this in action?** The `six-categories-example.html`file demonstrates exactly how these layers build upon each other. Start with just the HTML structure (raw, unstyled content), then progressively uncomment each section to watch the page transform: CSS adds visual polish, JavaScript enables interaction, data payloads bring dynamic content, assets provide images and media, and runtime bootstrapping ties everything together into a living application. Each layer depends on the previous ones, proving that all six categories are truly essential — remove any one, and the complete web experience breaks down.
 
 ---
+
+# 4. Frontend Development Technologies
+
+# 5. Node.js 
+
+
+
