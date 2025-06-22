@@ -20,13 +20,13 @@ Rather than waiting for slow tasks like file access or network requests to finis
 At the core of Node.js is an event loop that listens, reacts, and coordinates activity as it becomes ready. This model supports continuous, real-time flows—ideal for use cases that require many things happening at once without disrupting the overall responsiveness of the application.
 
 
-
-
-
+---
 
 ## Functional Roles of Node.js
 
-### A. SSR & Static Rendering (Frigg’s Gate Server Runtime)
+---
+
+### 5.A. SSR & Static Rendering (Frigg’s Gate Server Runtime)
 
 🧱 **LNS Mapping:**  
 Node.js powers the **entire SSR lifecycle of Frigg’s Gate** — both in local development (`next dev`) and production deployments (whether on **Vercel**, **Docker**, or **self-hosted Node servers**). It is the **runtime environment executing Frigg’s Gate’s server logic**, enabling:
@@ -37,58 +37,14 @@ Node.js powers the **entire SSR lifecycle of Frigg’s Gate** — both in local 
 
 This holds true across all hosting models — Node.js is always the execution layer behind Frigg’s Gate.
 
----
-
-
-
-
-This holds true across all hosting models — Node.js is always the execution layer behind Frigg’s Gate.
-
----
-
-🔧 **Technical Note:**  
-This rendering environment is often referred to as a **“React server”**, but in practice, it runs **inside a Node.js process**.
-
 🔧 **Technical Note:**  
 This rendering environment is often referred to as a **“React server”**, but in practice, it runs **inside a Node.js process**. Node.js executes the React server renderer to generate HTML and prepare all six critical browser inputs — **HTML**, **CSS**, **JavaScript**, **data payloads**, **assets**, and **bootstrapping code** — packaging them into a complete, streamable web page.
 
-🛠️ **Development vs. Production: JIT vs. Compiled Executio:**  
+🛠️ **Development vs. Production: JIT vs. Compiled Execution:**  
 In a Next.js + Node.js architecture like Frigg’s Gate, the system behaves fundamentally differently depending on whether it’s in **development** or **production** mode. The distinction centers on whether code is executed **Just-In-Time (JIT)** or **compiled in advance**.
 
-#### ⚙️ JIT (Development Mode)
 
-- Code, styles, and routes are **compiled on demand**
-- Tailwind CSS compiles classes **as you write them** (JIT engine)
-- Chakra UI resolves themes and styles in **live JavaScript**
-- React server rendering is **uncached and executed per request**
-- JavaScript is transpiled and served **on the fly**
-- Hot Module Reload (HMR) supports **instant feedback**
-
-✅ **Purpose:** Prioritize speed of iteration, not performance.
-
-**Compiled in Advance (Production Mode)**
-
-- Everything is **precompiled during `next build`**:
-  - React components rendered into **optimized SSR output**
-  - Tailwind styles **extracted, purged, and minified**
-  - Chakra UI themes included in **static bundles**
-  - JavaScript **transpiled, tree-shaken, minified**, and split into chunks
-  - Static assets **hashed** and **CDN-ready**
-
-✅ **Purpose:** Maximize performance, reduce runtime work, and enable caching.
-
-#### ✅ Frigg’s Gate Impact
-
-| Mode        | Behavior                                                |
-|-------------|----------------------------------------------------------|
-| Development | Everything runs live and hot — slow but flexible         |
-| Production  | Everything is precompiled — fast, predictable, efficient |
-
-This distinction defines how Node.js prepares the six browser-critical resources in each context and underpins the **build vs. runtime separation** central to modern full-stack systems.
-
----
-
-### 5.2.3 Static Rendering (Not Used in LNS)
+**Static Rendering (Not Used in LNS)**
 
 ❗ **Not Adopted in LNS**
 
@@ -104,13 +60,9 @@ Static rendering (or **Static Site Generation**, SSG) means HTML is built once a
 - Markdown streaming and citation logic are dynamic  
 - Prebuilt HTML would break hydration and data flow
 
-👉 **LNS uses dynamic SSR only, powered by Node.js.**
+## 5.B NPM (Node Package Manager)
 
----
-
-## 5.3 NPM: Lifecycle, Composability, and Project Control
-
-### 5.3.1 Lifecycle Control via NPM
+### <<section name>>
 
 NPM functions as the execution and lifecycle shell of the JavaScript layer in LNS. It’s how Frigg’s Gate is bootstrapped, scripted, and automated:
 
@@ -119,7 +71,7 @@ NPM functions as the execution and lifecycle shell of the JavaScript layer in LN
 - `dotenv`, `openai`, `langchain` — integration glue  
 - `"scripts"` in `package.json` — execution entrypoints
 
-### 🧩 Comparison: NPM vs. Poetry
+ 🧩** Comparison: NPM vs. Poetry**
 
 In this role, **NPM is functionally equivalent to [Poetry](https://python-poetry.org)** in Python. Both manage dependencies, project scaffolding, and lockfile discipline — but **NPM goes further**, acting as:
 
@@ -127,23 +79,23 @@ In this role, **NPM is functionally equivalent to [Poetry](https://python-poetry
 - A frontend-aware toolchain coordinator  
 - A unified interface for JS/TS development lifecycle
 
-### 💡 Key Insight
+*💡 Key Insight*
 
 NPM isn’t just a package manager — it’s a **project orchestrator** and **runtime harness** for the entire JavaScript ecosystem.
 
 ---
 
-#### 5.2.4.2 Package Discovery, Publishing, and Semver Discipline
 
-### 🌐 Registry Model
+
+ 🌐 Registry Model
 
 NPM uses [npmjs.org](https://www.npmjs.com), the **largest module registry in any language**, hosting over **2 million packages** — making it the default distribution layer for full-stack JS.
 
-### 📤 Publishing in LNS
+ 📤 Publishing in LNS
 
 LNS can publish scoped internal packages like `@lns/insight-core` or `@lns/gatetester-bridge` to share logic across **Frigg’s Gate**, **GateTester**, and **Bifröst** — all without exposing code publicly.
 
-### 📈 Semver Discipline
+ 📈 Semver Discipline
 
 NPM adheres to **Semantic Versioning (Semver)** — a universal versioning standard that lets developers express exactly what kind of change a package introduces. Each version has a three-part format: `MAJOR.MINOR.PATCH`, and NPM uses version prefixes to control how packages are updated:
 
