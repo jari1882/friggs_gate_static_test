@@ -5,8 +5,11 @@ import { Montserrat } from "next/font/google";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Chat LangChain",
+  title: "life-nervous-system",
   description: "Chatbot for LangChain",
+  icons: {
+    icon: "/brain-favicon.ico",
+  },
 };
 
 export default function RootLayout({
