@@ -1,4 +1,4 @@
-# 🧠 Mental Model: How Next.js Powers Frigg’s Gate as a Browser-Ready Application
+# 🧠 Next.js: Application Framework
 
 🟢 **First Principle: The Browser Doesn't Care About Your Stack**
 
@@ -28,13 +28,36 @@ Everything else — Next.js, React, JSX, TypeScript, Tailwind, Chakra UI, LangCh
 
 ## 🧱 Layer-by-Layer Breakdown
 
-### 1. Next.js 13.5.4 (App Router) = Request/Response Orchestrator
-- Matches request paths (e.g. `/`, `/api/*`)
-- Uses App Router file-based routing (`frontend/app/page.tsx`)
-- Applies rendering strategy: SSR for your chat interface
-- Compiles and serves final output (HTML/CSS/JS/data)
+### 1. Next.js 13.5.4 (App Router) = **Node.js-Powered Request/Response Orchestrator**
 
-✅ **Think of it as the page bundler and response architect.**
+- Runs on a **Node.js server**, launched with:
+  - `npm run dev` or `yarn dev` → runs `next dev` (development)
+  - `npm run start` or `yarn start` → runs `next start` (production)
+- Both commands start the Next.js server from the `frontend/` directory, which loads your App Router application beginning with `frontend/app/layout.tsx` and `frontend/app/page.tsx`.
+- Handles incoming **HTTP requests** from the browser.
+- Matches request paths like `/`, `/chat`, or `/api/send` to files in the `app/` directory:
+  - e.g. `app/page.tsx`, `app/api/send/route.ts`
+- Uses **App Router** to determine **how to render** the response:
+  - SSR (Server-Side Rendering) for dynamic content like your chat interface.
+  - Static or dynamic API responses via handlers in the `app/api` folder.
+- Gathers and assembles the output:
+  - Server-rendered HTML from your React components.
+  - Bundled JavaScript for hydration and interactivity.
+  - CSS extracted from Tailwind, Chakra, and Emotion.
+  - Any JSON or embedded data needed by the UI.
+- Returns the complete **browser-ready payload**: HTML, CSS, JS, and data.
+
+📁 **Entry Point Flow:**
+1. **`layout.tsx`** defines the root HTML shell, global styles (`globals.css`), metadata, and `<body>` setup — including the dark theme and font.
+2. **`page.tsx`** is injected as `{children}` into the layout, and sets up:
+   - ChakraProvider for theme context
+   - ToastContainer for notifications
+   - `<ChatWindow conversationId={uuidv4()} />` — the main chat UI
+3. **`ChatWindow.tsx`** holds the full interface logic: user input, model selection, message history, streaming, citations.
+
+✅ **Think of Next.js as the Node.js-based brain that maps URL paths to files, renders the appropriate component tree starting at `layout.tsx`, and packages the output into an executable response for the browser.**
+
+
 
 ### 2. React Components + JSX = UI Blueprint
 You write functions like:
