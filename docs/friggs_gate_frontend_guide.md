@@ -23,9 +23,7 @@ Over time, **Bifröst** will emerge as a full cognitive architecture — managin
 
 ---
 
-# 1. 🧱 System Architecture Overview
-
-# 1. 🧱 System Architecture Overview
+# 1. 🧱 System Architecture 
 
 **LNS is a production-grade cognitive architecture** that converts human intent into structured insight through semantically routed execution pipelines. It spans UI input, agent orchestration, tool invocation, memory, and streaming output — enabling real-time cognition across web, CLI, and API clients.
 
