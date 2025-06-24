@@ -25,138 +25,134 @@ Over time, **Bifröst** will emerge as a full cognitive architecture — managin
 
 # 1. 🧱 System Architecture Overview
 
+# 1. 🧱 System Architecture Overview
 
-The Life Nervous System (LNS) is a **full-stack, production-grade intelligence platform** designed to deliver structured cognition, dynamic tool invocation, and seamless user interaction across both web and CLI interfaces. Frigg’s Gate functions as the **dimensional gateway** — the singular portal through which all human intent flows into LNS and returns as structured insight.
+**LNS is a production-grade cognitive architecture** that converts human intent into structured insight through semantically routed execution pipelines. It spans UI input, agent orchestration, tool invocation, memory, and streaming output — enabling real-time cognition across web, CLI, and API clients.
 
-At its core, this is an operational cognitive architecture spanning from natural language input to backend orchestration, tool execution, and intelligent data retrieval.
+---
 
+## 🌐 1. Intent Ingress (User-Facing Entrypoints)
 
+All user input flows through **Frigg’s Gate (Web UI)**, **GateTester (CLI)**, or direct **API clients**, which wrap natural language into structured JSON requests. Each request includes session metadata, conversation history, and payload content.
 
-## 🌐 1.1 Request Initiation (Client Interfaces)
-
-**Initiators:**
-- **Frigg’s Gate (Web UI)**: Primary interface for human users  
-- **GateTester (CLI)**: Python-based CLI for structured interaction and debugging  
-- **API Clients**: External programs or services invoking LNS logic via structured JSON
-
-**Role:**  
-Each initiator formats and sends JSON payloads containing user queries, session metadata, and conversation context — triggering the cognitive lifecycle of a request.
-
-
-
-## 🖼 1.2 Frigg’s Gate (Frontend Interface Layer)
-
-**Tech Stack:**  
-- React + TypeScript (Next.js)  
-- Tailwind CSS + Chakra UI
+**Interfaces:**
+- **Frigg’s Gate**: Web frontend built in **Next.js (React + TypeScript)** with **Tailwind + Chakra UI**
+- **GateTester**: Python CLI for testable chat simulation and inspection
+- **API Clients**: External callers using the same JSON schema
 
 **Role:**  
-The visual and interactive shell of the LNS. It transforms user input into structured requests and renders streamed, cited, and semantically routed responses.
+Normalize user intent into machine-readable requests and dispatch to the orchestration backend.
 
-**Key Traits:**  
+---
+
+## 🖼 2. Frigg’s Gate (Web Interface Runtime)
+
+**Runtime:** Node.js-powered SSR (local, Docker, or Vercel)
+
+**Traits:**
+- Real-time response streaming  
 - Lightweight state management  
-- Real-time streaming display  
-- Markdown and citation rendering  
-- Planned support for voice input and component-based prompt composition
+- Markdown + citation rendering  
+- Planned: voice input and component-based prompt builders
 
-**Runtime Environment:**  
-Frigg’s Gate operates atop a Node.js runtime. Whether deployed locally, in Docker, or on Vercel, Node.js powers the Next.js server components, API endpoints, and SSR logic — making it the execution layer behind all server-side interaction and interface hydration.
+---
 
+## 🧪 3. GateTester (CLI Simulator)
 
+**Tech:** Python  
+**Function:** Simulates Frigg’s Gate input/output in a terminal.  
 
+**Traits:**
+- Auto-injected metadata (caller, timestamp)  
+- Direct interface to Bifröst  
+- Supports prompt debugging and agent testing
 
-## 👁 1.3 GateTester (CLI Chat Simulator)
+---
 
-**Tech Stack:**  
-- Python
+## 🧠 4. Bifröst (Cognitive Orchestration Engine)
 
-**Role:**  
-Simulates Frigg’s Gate behavior in a terminal context for rapid testing, inspection, and developer access.
-
-**Key Traits:**  
-- Structured payload generation  
-- Auto-populated metadata (caller, timestamp, session)  
-- Direct interaction with Bifröst for agent evaluation
-
-
-
-## 🌀 1.4 Bifröst (Cognitive Orchestration Layer)
-
-**Tech Stack:**  
-- LangGraph / LangServe / FastAPI (Python)  
-- LangChain Expression Language (LCEL), LangSmith (task tracing and debugging)
+**Tech Stack:**
+- LangGraph + LangServe + FastAPI  
+- LCEL (LangChain Expression Language)  
+- LangSmith for execution tracing
 
 **Role:**  
-The semantic router and orchestration graph behind LNS. Bifröst receives structured inputs, interprets them contextually, and dynamically invokes downstream agents — known as **Cyphers**.
+Acts as the semantic router. Interprets structured requests and orchestrates dynamic workflows across modular tool agents called **Cyphers**.
 
-**Key Traits:**  
-- Flow control and error branching via LangGraph  
-- Context-aware Cypher invocation  
-- Multi-agent workflows with memory, chaining, and session continuity
+**Capabilities:**
+- Contextual tool selection  
+- Multi-agent execution graphs  
+- Flow control, error routing, memory continuity
 
+---
 
+## ⚙️ 5. Cyphers (Tool Execution Units)
 
-## ⚙️ 1.5 Cyphers (Tooling and Execution Modules)
+**Tech:**
+- Python for control and logic  
+- Rust for high-performance ops
 
-**Tech Stack:**  
-- Python (logic and orchestration)  
-- Rust (performance-critical operations)
+**Function:**  
+Modular, independently callable agents for specific computations.
 
-**Examples:**  
-- Quote calculation  
-- Ledger table parsing  
-- Life expectancy modeling  
-- Illustration projection engine
+**Examples:**
+- Quote + premium modeling  
+- Ledger parsing and projections  
+- Mortality modeling and LTV estimation  
+- Policy illustration engines
 
-**Role:**  
-Individually callable units of structured intelligence, triggered by Bifröst depending on user intent, payload context, and system memory.
+**Invocation:**  
+Triggered dynamically by Bifröst based on intent and payload.
 
+---
 
+## 📚 6. Intelligence & Data Layer
 
-## 🧠 1.6 Intelligence & Data Layer
+**Datastores:**
+- SQLite (default local store)  
+- PostgreSQL / DuckDB / MotherDuck (under test)  
+- Chroma for remote vector search  
+- NEOR4 (graph-based knowledge store)
 
-**Datastores:**  
-- **SQLite** (current default)  
-- **PostgreSQL / DuckDB / MotherDuck** (under evaluation)  
-- **Chroma** (remote vector search for semantic retrieval)  
-- **NEOR4** (custom graph knowledge store)
+**Capabilities:**
+- Hybrid tabular + vector search  
+- Contextual embedding retrieval  
+- Knowledge graph lookups  
+- Persistent memory and caching
 
-**Functions:**  
-- Embedding-based document retrieval  
-- Hybrid search (tabular + vector)  
-- Structured knowledge graph lookup  
-- Persistent session memory and state caching
+---
 
+## 📤 7. Response & Delivery
 
+**Formats:**
+- Markdown (for Frigg’s Gate)  
+- JSON (API/tool outputs)  
+- Tracebacks/logs (debug + CLI)
 
-## 📤 1.7 Response System
+**Targets:**
+- Frigg’s Gate (UI)  
+- GateTester (terminal)  
+- External APIs (programmatic)
 
-**Formats:**  
-- Markdown (rendered in Frigg’s Gate)  
-- JSON (for API clients and tool results)  
-- Tracebacks / logs (for debugging)
+**Note:** Output is streamed, not batched — enabling low-latency interactivity across clients.
 
-**Delivery Targets:**  
-- Frigg’s Gate (for real-time user rendering)  
-- GateTester (terminal output)  
-- External clients (via HTTP API)
+---
 
+## 🌐 8. Network & Deployment
 
+**Environments:**
+- `localhost:8000` for dev  
+- `0.0.0.0:8000` for open testing  
+- Docker or Vercel for production
 
-## 🌐 1.8 Network & Delivery
-
-**Environments:**  
-- `localhost:8000`: Default local development  
-- `0.0.0.0:8000`: Open port testing  
-- Vercel / Docker: Production deployment targets
-
-**External Dependencies:**  
-- Chroma (remote embedding index)  
-- Cloud-based LLMs  
-- Persistent stores (remote SQLite or Postgres variants)
+**External Dependencies:**
+- Hosted LLM APIs  
+- Chroma (embedding index)  
+- Remote persistent stores (Postgres, DuckDB)
 
 **Forward Path:**  
-The stack is evolving toward low-latency, bidirectional flows via React Server Components or direct server-bound action layers — minimizing client-server roundtrips and enabling next-gen conversational tooling.
+Migrating to bidirectional server-bound action layers via **React Server Components** and **real-time backend hooks** — reducing latency and increasing interaction density.
+
 
 ---
 
