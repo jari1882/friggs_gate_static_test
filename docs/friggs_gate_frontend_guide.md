@@ -43,15 +43,14 @@ Normalize user intent into machine-readable requests and dispatch to the orchest
 
 ---
 
-## 🖼 2. Frigg’s Gate (Web Interface Runtime)
+## 🖼 2. Frigg’s Gate Frontend (Web Interface Runtime)
 
-**Runtime:** Node.js-powered SSR (local, Docker, or Vercel)
+**Runtime:** Server-side rendered (SSR) via Node.js — run locally in development, with deployment targeting Vercel-class platforms for production.
 
 **Traits:**
 - Real-time response streaming  
-- Lightweight state management  
-- Markdown + citation rendering  
-- Planned: voice input and component-based prompt builders
+- Minimal state management (UI remains intentionally stateless)  
+- Markdown and citation rendering  
 
 ---
 
