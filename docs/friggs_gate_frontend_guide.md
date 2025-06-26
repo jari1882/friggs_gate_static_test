@@ -23,7 +23,7 @@ Over time, **Bifröst** will emerge as a full cognitive architecture — managin
 
 ---
 
-# 1. 🧱 System Architecture 
+# 1. 🧱 LNS System Architecture 
 
 **LNS is a production-grade cognitive architecture** that converts human intent into structured insight through semantically routed execution pipelines. It spans UI input, agent orchestration, tool invocation, memory, and streaming output — enabling real-time cognition across web, CLI, and API clients.
 
@@ -39,7 +39,7 @@ All user input flows through **Frigg’s Gate (Web UI)**, **GateTester (CLI)**, 
 - **API Clients**: External callers using the same JSON schema
 
 **Role:**  
-Normalize user intent into machine-readable requests and dispatch to the orchestration backend.
+Normalize user intent into machine-rele requests and dispatch to the orchestration backend.
 
 ---
 
@@ -57,29 +57,31 @@ Normalize user intent into machine-readable requests and dispatch to the orchest
 ## 🧪 3. GateTester (CLI Simulator)
 
 **Tech:** Python  
-**Function:** Simulates Frigg’s Gate input/output in a terminal.  
+**Function:** Mirrors Frigg’s Gate behavior for backend testing and orchestration inspection.
 
 **Traits:**
-- Auto-injected metadata (caller, timestamp)  
-- Direct interface to Bifröst  
-- Supports prompt debugging and agent testing
+- Emulates frontend logic via terminal interface  
+- Direct interface to Bifröst (semantic router)  
+- Enables backend prototyping without UI  
 
 ---
 
 ## 🧠 4. Bifröst (Cognitive Orchestration Engine)
 
 **Tech Stack:**
+- Python  
 - LangGraph + LangServe + FastAPI  
 - LCEL (LangChain Expression Language)  
 - LangSmith for execution tracing
 
 **Role:**  
-Acts as the semantic router. Interprets structured requests and orchestrates dynamic workflows across modular tool agents called **Cyphers**.
+Bifröst is the **cortex of the backend**, managing global orchestration state and acting as the semantic router. Through **Circuits**, it coordinates sharded state across modular agents called **Cyphers**.
 
 **Capabilities:**
 - Contextual tool selection  
 - Multi-agent execution graphs  
 - Flow control, error routing, memory continuity
+
 
 ---
 
@@ -93,10 +95,10 @@ Acts as the semantic router. Interprets structured requests and orchestrates dyn
 Modular, independently callable agents for specific computations.
 
 **Examples:**
-- Quote + premium modeling  
-- Ledger parsing and projections  
-- Mortality modeling and LTV estimation  
-- Policy illustration engines
+- Quick Quote  
+- Life Expectancy + Basic Illustration 
+- Underwriter Educator  
+- About Frigg and LNS
 
 **Invocation:**  
 Triggered dynamically by Bifröst based on intent and payload.
@@ -140,7 +142,7 @@ Triggered dynamically by Bifröst based on intent and payload.
 **Environments:**
 - `localhost:8000` for dev  
 - `0.0.0.0:8000` for open testing  
-- Docker or Vercel for production
+- Vercel for production
 
 **External Dependencies:**
 - Hosted LLM APIs  
