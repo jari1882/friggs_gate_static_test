@@ -1,12 +1,4 @@
 
-
-
-
-
-
-
-
-
 # 2. 🖼  Frigg’s Gate (Frontend Interface Layer)
 
 ## 2.1 Runtime: Node.js Architecture and Event-Driven Model
@@ -1125,12 +1117,6 @@ This diagram presents the **target architecture** of Frigg's Gate: a flexible, m
   │   ├── hooks/
   │   │   ├── useFriggState.ts
   │   │   ├── useInputSync.ts
-  │   ├── api/
-  │   │   ├── bifrostBridge.ts
-  │   ├── agents/
-  │   │   ├── CypherRouter.ts
-  │   ├── styles/
-  │   └── pages/
   ├── package.json
   └── README.md
 ```
