@@ -1,5 +1,9 @@
 # Frigg's Gate
 
+![Build Status](https://img.shields.io/github/actions/workflow/status/jari1882/friggs-gate/ci.yml?branch=main)
+![Version](https://img.shields.io/github/package-json/v/jari1882/friggs-gate/frontend)
+![License](https://img.shields.io/github/license/jari1882/friggs-gate)
+
 **Frigg's Gate** is the central interface to the Life Nervous System (LNS) — a mythically-coded, multiverse-inspired orchestration layer that governs access to knowledge, tools, and cognitive processes. It serves as the dimensional gateway through which structured intelligence flows, and through which all external interfaces must pass.
 
 ## System Overview
@@ -14,6 +18,65 @@ Over time, **Bifröst** will emerge as a full cognitive architecture — managin
 ## Architecture
 
 LNS is a production-grade cognitive architecture that converts human intent into structured insight through semantically routed execution pipelines. It spans UI input, agent orchestration, tool invocation, memory, and streaming output — enabling real-time cognition across web, CLI, and API clients.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Life Nervous System (LNS)                   │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │   Frigg's Gate  │  │   GateTester    │  │   API Clients   │  │
+│  │  (Web Frontend) │  │  (CLI Tester)   │  │  (External)     │  │
+│  │                 │  │                 │  │                 │  │
+│  │  Next.js        │  │  Python         │  │  JSON/HTTP      │  │
+│  │  React          │  │  Terminal       │  │  REST API       │  │
+│  │  TypeScript     │  │  CLI Interface  │  │  Integration    │  │
+│  └─────────┬───────┘  └─────────┬───────┘  └─────────┬───────┘  │
+│            │                    │                    │          │
+│            └────────────────────┼────────────────────┘          │
+│                                 │                               │
+├─────────────────────────────────┼─────────────────────────────────┤
+│            ┌────────────────────┴────────────────────┐          │
+│            │           🌀 Bifröst Backend            │          │
+│            │     (Cognitive Orchestration Engine)     │          │
+│            │                                         │          │
+│            │  ┌─────────────────────────────────────┐ │          │
+│            │  │        LangGraph + LangServe        │ │          │
+│            │  │         FastAPI + Python            │ │          │
+│            │  │         LangSmith Tracing           │ │          │
+│            │  └─────────────────────────────────────┘ │          │
+│            │                    │                     │          │
+│            │  ┌─────────────────┴───────────────────┐ │          │
+│            │  │         Cyphers (Agents)            │ │          │
+│            │  │                                     │ │          │
+│            │  │  • Quick Quote                      │ │          │
+│            │  │  • Life Expectancy + Illustration   │ │          │
+│            │  │  • Underwriter Educator             │ │          │
+│            │  │  • About Frigg and LNS              │ │          │
+│            │  └─────────────────────────────────────┘ │          │
+│            └─────────────────┬───────────────────────┘          │
+├──────────────────────────────┼──────────────────────────────────┤
+│            ┌─────────────────┴───────────────────┐              │
+│            │        Intelligence & Data Layer     │              │
+│            │                                     │              │
+│            │  ┌─────────────┐  ┌─────────────────┐ │              │
+│            │  │   Local     │  │     Remote      │ │              │
+│            │  │   Storage   │  │    Storage      │ │              │
+│            │  │             │  │                 │ │              │
+│            │  │  SQLite     │  │  PostgreSQL     │ │              │
+│            │  │  (Default)  │  │  DuckDB         │ │              │
+│            │  │             │  │  MotherDuck     │ │              │
+│            │  └─────────────┘  └─────────────────┘ │              │
+│            │                                     │              │
+│            │  ┌─────────────┐  ┌─────────────────┐ │              │
+│            │  │   Vector    │  │     Graph       │ │              │
+│            │  │   Search    │  │   Knowledge     │ │              │
+│            │  │             │  │                 │ │              │
+│            │  │   Chroma    │  │    NEOR4        │ │              │
+│            │  │  (Remote)   │  │  (Graph DB)     │ │              │
+│            │  └─────────────┘  └─────────────────┘ │              │
+│            └─────────────────────────────────────┘              │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### Key Components
 
@@ -69,28 +132,12 @@ LNS is a production-grade cognitive architecture that converts human intent into
 
 ### API Integration
 
-The frontend communicates with the Bifröst backend via the `/ask/invoke` endpoint. See `docs/bifrost_api_contract.md` for detailed API specifications.
+**Main Endpoint:**
+- **Base URL**: `http://localhost:8000` (development)
+- **Endpoint**: `POST /ask/invoke`
+- **Purpose**: Submit questions to the 🌀 Bifröst cognitive orchestration engine
 
-Example payload:
-```json
-{
-  "input": {
-    "version": "1.0",
-    "question": "How much would a policy cost for a 40-year-old?",
-    "chat_history": [],
-    "metadata": {
-      "caller": "frontend_app",
-      "purpose": "quote_request",
-      "timestamp": "2025-06-06T13:45:00Z"
-    },
-    "session": {
-      "user_id": "user-456",
-      "context": {}
-    },
-    "stream": false
-  }
-}
-```
+The frontend communicates with the Bifröst backend via structured JSON payloads. For detailed API documentation including request/response schemas, authentication, and error handling, see [`docs/API.md`](docs/API.md).
 
 ## Features
 
@@ -128,27 +175,13 @@ frontend/
 └── package.json           # Dependencies and scripts
 ```
 
-### Component Architecture
-
-```
-page.tsx (Home)
-├── ChakraProvider (UI theme context)
-│   ├── ToastContainer (notifications)
-│   └── ChatWindow (main app shell)
-│       ├── LLM Selector (model switching)
-│       ├── EmptyState (suggestion boxes)
-│       ├── ChatMessageBubble[] (conversation history)
-│       ├── SourceBubble (citations)
-│       ├── AutoResizeTextarea (input)
-│       └── InlineCitation (references)
-```
 
 ## Documentation
 
-- `docs/friggs_gate_frontend_guide.md` - Comprehensive frontend architecture guide
-- `docs/bifrost_api_contract.md` - Backend API specification
-- `docs/repository-specification.md` - Project specifications
-- `UI-PANEL-REDESIGN.md` - UI design documentation
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) - Detailed system architecture and component design
+- [`docs/API.md`](docs/API.md) - Complete API documentation and contracts
+- [`docs/friggs_gate_frontend_guide.md`](docs/friggs_gate_frontend_guide.md) - Comprehensive frontend implementation guide
+- [`docs/UI-PANEL-REDESIGN.md`](docs/UI-PANEL-REDESIGN.md) - UI design evolution and panel system
 
 ## Contributing
 

@@ -331,6 +331,146 @@ Vercel Platform
 - **Voice Interface**: Speech-to-text and text-to-speech integration
 - **Advanced Analytics**: ML-powered usage insights
 
+## Browser Request Lifecycle: From URL to Rendered Interface
+
+Understanding how web requests flow from user input to rendered interface is fundamental to Frigg's Gate's architecture. This section details the complete lifecycle from when a user types a URL to when they see the interactive chat interface.
+
+### Step 1: DNS Resolution and Secure Connection
+
+When a user navigates to Frigg's Gate:
+
+1. **DNS Resolution**: The browser resolves the domain name to an IP address
+2. **TLS Handshake**: A secure HTTPS connection is established 
+3. **Certificate Validation**: The browser verifies the server's identity
+4. **Encrypted Channel**: All subsequent communication is encrypted
+
+### Step 2: HTTP Request and Server Response
+
+The browser sends an HTTP request that includes:
+- Request headers (User-Agent, Accept types, etc.)
+- Any authentication tokens or session data
+- Referrer information and browser capabilities
+
+### Step 3: Next.js Server-Side Rendering
+
+Frigg's Gate's Next.js server processes the request by:
+
+1. **Route Matching**: Mapping the URL to the appropriate page component
+2. **Component Execution**: Running React components server-side
+3. **Data Fetching**: Loading any initial data required for the page
+4. **HTML Generation**: Rendering the complete HTML document
+5. **Asset Bundling**: Including CSS, JavaScript, and other resources
+
+### Step 4: The Six Essential Web Categories
+
+Every web page, including Frigg's Gate, requires six fundamental categories of resources:
+
+#### 1. HTML Structure
+- Defines the document skeleton and semantic structure
+- Creates the DOM tree that other technologies manipulate
+- Provides accessibility landmarks and navigation structure
+
+#### 2. CSS Styling  
+- **Foundational Styling**: Global fonts, colors, and theme defaults
+- **Layout & Positioning**: Flexbox, grid, spacing, and responsive design
+- **Component Appearance**: Visual identity, states, and interactions
+- **One-Off Customization**: Specific tweaks and unique styling needs
+
+#### 3. JavaScript Logic
+- **DOM Interaction**: Event handling and browser API access
+- **Component Logic**: Local state management and user interactions  
+- **Application State**: Global data flow and cross-component communication
+- **Business Logic**: Domain-specific rules and cognitive orchestration
+
+#### 4. Data Payloads
+- Initial page data embedded in HTML
+- API responses from Bifröst backend
+- Real-time streaming content from LLM interactions
+- Session and user preference data
+
+#### 5. Assets
+- Images, icons, and visual media
+- Fonts and typography resources
+- Audio/video content when applicable
+- Downloadable files and documents
+
+#### 6. Runtime Bootstrapping
+- React hydration process
+- Event listener attachment
+- State initialization and context setup
+- Service worker registration (if applicable)
+
+### Step 5: Client-Side Hydration
+
+Once the HTML reaches the browser:
+
+1. **Parse HTML**: The browser builds the initial DOM structure
+2. **Load Resources**: CSS and JavaScript files are fetched and processed
+3. **React Hydration**: JavaScript "wakes up" the static HTML
+4. **Event Binding**: User interactions become functional
+5. **State Initialization**: The application becomes fully interactive
+
+## Styling Architecture
+
+Frigg's Gate employs a sophisticated multi-layered styling approach that combines three complementary technologies:
+
+### Technology Stack Integration
+
+| Technology | Purpose | Usage Pattern |
+|------------|---------|---------------|
+| **Tailwind CSS** | Utility-first layout and structure | `className="flex p-4 bg-gray-800"` |
+| **Chakra UI** | Component system with design tokens | `<Box bg="gray.800" p={4}>` |
+| **Emotion** | CSS-in-JS for dynamic styling | Runtime style generation |
+
+### Four Layers of Styling
+
+#### Layer 1: Foundational Styling
+Establishes the baseline visual system:
+- Global font families and typography scales
+- Base color palette and theme tokens
+- Default spacing and layout rules
+- Universal component behaviors
+
+#### Layer 2: Layout & Positioning  
+Controls spatial relationships:
+- Flexbox and grid structures for complex layouts
+- Responsive breakpoints and mobile-first design
+- Container constraints and content flow
+- Alignment and distribution patterns
+
+#### Layer 3: Component Appearance
+Defines visual identity:
+- Color schemes and visual variants
+- Interactive states (hover, focus, disabled)
+- Shadows, borders, and visual depth
+- Typography hierarchy and text treatment
+
+#### Layer 4: One-Off Customization
+Handles specific exceptions:
+- Conditional styling based on application state
+- Temporary overrides for special cases
+- Prototype and experimental visual treatments
+- Page-specific design requirements
+
+## Security and Content Processing
+
+Frigg's Gate implements multiple layers of security to protect against common web vulnerabilities:
+
+### Content Sanitization
+- **DOMPurify**: Sanitizes all user-generated HTML content
+- **Input Validation**: Validates and sanitizes form inputs before processing
+- **XSS Prevention**: Prevents script injection through content filtering
+
+### Secure Communication
+- **HTTPS Enforcement**: All communication encrypted in transit
+- **CSRF Protection**: Cross-site request forgery prevention
+- **Content Security Policy**: Restricts resource loading to trusted sources
+
+### Markdown and Code Processing
+- **Marked.js**: Safely processes markdown content from LLM responses
+- **Highlight.js**: Provides syntax highlighting for code blocks
+- **Content Isolation**: User content is processed in isolated contexts
+
 ---
 
 This architecture document serves as the definitive reference for understanding the technical foundations of Frigg's Gate and its role within the broader Life Nervous System ecosystem.

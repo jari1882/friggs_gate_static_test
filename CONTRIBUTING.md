@@ -219,7 +219,7 @@ Include:
 
 ### API Integration
 
-- Use the existing **Bifröst API contract** in `docs/bifrost_api_contract.md`
+- Use the existing **Bifröst API contract** in `docs/API.md`
 - Handle **error states** gracefully
 - Implement **proper loading states**
 - Add **retry logic** for failed requests
