@@ -2,7 +2,7 @@
 
 **Date:** June 23, 2025  
 **Author:** Claude Code  
-**Components Modified:** `ChatLangChain.tsx`, `ToolDock.tsx`, `StructuredOutputDock.tsx`
+**Components Modified:** `ChatLangChain.tsx`, `StructuredInput.tsx`, `StructuredOutputDock.tsx`
 
 ## Overview
 
@@ -62,7 +62,7 @@ frontend/app/components/
 frontend/app/components/
 ├── ChatLangChain.tsx           # Main orchestrator
 ├── MemorySlider.tsx            # NEW: Memory management
-├── ToolDock.tsx               # NEW: Tool panel  
+├── StructuredInput.tsx        # NEW: Structured input panel  
 ├── StructuredOutputDock.tsx   # NEW: Output panel
 ├── SelectModel.tsx            # NEW: Model selection
 ├── chat-interface/            # NEW: Modular chat components
@@ -200,13 +200,13 @@ Building on the modern friggs-gate-2 foundation, this phase implements a sophist
 - **Installation:** `npm install re-resizable --legacy-peer-deps`
 - **Reason:** Chosen for its React-specific drag-to-resize functionality, lightweight implementation, and TypeScript support
 
-### 3. ToolDock Component Redesign
+### 3. StructuredInput Component Redesign
 
 #### 3.1 Interface Changes
-- **File:** `frontend/app/components/ToolDock.tsx:14-18`
+- **File:** `frontend/app/components/StructuredInput.tsx:14-18`
 - **Added Props:**
   ```tsx
-  export interface ToolDockProps {
+  export interface StructuredInputProps {
     tools: Tool[];
     width: number;           // Current width of the panel
     onWidthChange: (width: number) => void;  // Callback for width changes
@@ -264,10 +264,10 @@ Building on the modern friggs-gate-2 foundation, this phase implements a sophist
 - **Replaced:**
   ```tsx
   // Old toggle-based state
-  const [isToolDockOpen, setIsToolDockOpen] = useState(true);
+  const [isStructuredInputOpen, setIsStructuredInputOpen] = useState(true);
   
   // New width-based state management
-  const [toolDockWidth, setToolDockWidth] = useState(240);
+  const [structuredInputWidth, setStructuredInputWidth] = useState(240);
   const [structuredOutputWidth, setStructuredOutputWidth] = useState(400);
   ```
 
@@ -281,7 +281,7 @@ Building on the modern friggs-gate-2 foundation, this phase implements a sophist
   ```
 
 #### 5.3 Three-Panel Layout Structure
-1. **Left Panel (ToolDock):**
+1. **Left Panel (StructuredInput):**
    - Fixed width container: `style={{ width: toolDockWidth, flexShrink: 0 }}`
    - Prevents shrinking during layout changes
    
@@ -299,7 +299,7 @@ Building on the modern friggs-gate-2 foundation, this phase implements a sophist
 
 ### Drag Behavior Logic
 
-#### ToolDock (Left Panel)
+#### StructuredInput (Left Panel)
 ```tsx
 onResizeStop={(e, direction, ref, d) => {
   const newWidth = width + d.width;
@@ -327,7 +327,7 @@ const centerWidth = `calc(100vw - ${toolDockWidth}px - ${rightPanelWidth}px)`;
 1. **No Overlapping:** Panels maintain clear boundaries
 2. **Proportional Resizing:** Center panel adjusts as side panels resize
 3. **Minimum Constraints:** Each panel has minimum width to maintain usability
-4. **Maximum Constraints:** ToolDock has maximum width to prevent over-expansion
+4. **Maximum Constraints:** StructuredInput can resize to full screen width
 
 ### Edge Cases Handled
 - **Very Small Screens:** Center panel minimum width prevents complete collapse
@@ -347,7 +347,7 @@ The following features were discussed but not implemented in this phase:
 ## Files Modified
 
 1. `/frontend/app/components/ChatLangChain.tsx` - Main layout and state management
-2. `/frontend/app/components/ToolDock.tsx` - Left panel drag-to-resize
+2. `/frontend/app/components/StructuredInput.tsx` - Left panel drag-to-resize
 3. `/frontend/app/components/StructuredOutputDock.tsx` - Right panel drag-to-resize
 4. `/frontend/package.json` - Added `re-resizable` dependency
 
@@ -383,7 +383,7 @@ const newWidth = width + d.width;  // Correct directional behavior
 **File Modified:** `frontend/app/components/StructuredOutputDock.tsx:26`
 
 ### StructuredOutputDock Collapse Functionality
-**Enhancement:** Added ability to collapse to minimal state like ToolDock
+**Enhancement:** Added ability to collapse to minimal state like StructuredInput
 
 **Changes Made:**
 1. **Minimum Width Reduction:** Changed from 200px to 48px
@@ -409,7 +409,7 @@ const newWidth = width + d.width;  // Correct directional behavior
 
 **File Modified:** `frontend/app/components/StructuredOutputDock.tsx:27,54-93`
 
-### ToolDock Collapse State Enhancement  
+### StructuredInput Collapse State Enhancement  
 **Enhancement:** Added vertical label for collapsed state to match StructuredOutputDock
 
 **Changes Made:**
@@ -434,7 +434,7 @@ const newWidth = width + d.width;  // Correct directional behavior
 )}
 ```
 
-**File Modified:** `frontend/app/components/ToolDock.tsx:49-96`
+**File Modified:** `frontend/app/components/StructuredInput.tsx:49-96`
 
 ### Panel Symmetry Achievement
 Both panels now feature:

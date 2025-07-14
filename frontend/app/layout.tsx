@@ -21,8 +21,8 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className={`${montserrat.className} h-full`}>
         <div
-          className="flex flex-col h-full md:p-8"
-          style={{ background: "rgb(38, 38, 41)" }}
+          className="flex flex-col h-full"
+          style={{ background: "#ffffff" }}
         >
           {children}
         </div>

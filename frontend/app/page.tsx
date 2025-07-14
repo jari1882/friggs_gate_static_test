@@ -10,7 +10,9 @@ export default function Home() {
   return (
     <ChakraProvider>
       <ToastContainer />
-      <ChatWindow conversationId={uuidv4()}></ChatWindow>
+      <div className="h-screen overflow-hidden">
+        <ChatWindow conversationId={uuidv4()}></ChatWindow>
+      </div>
     </ChakraProvider>
   );
 }

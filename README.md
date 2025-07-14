@@ -157,24 +157,6 @@ The frontend communicates with the Bifröst backend via structured JSON payloads
 - **Enhanced UX**: React Toastify, Framer Motion, Marked, Highlight.js
 - **Package Manager**: Yarn 1.22.19
 
-### Project Structure
-
-```
-frontend/
-├── app/
-│   ├── components/          # React components
-│   │   ├── ChatWindow.tsx   # Main chat interface
-│   │   ├── ChatMessageBubble.tsx
-│   │   ├── AutoResizeTextarea.tsx
-│   │   └── ...
-│   ├── utils/              # Utility functions
-│   ├── globals.css         # Global styles
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Home page
-├── public/                 # Static assets
-└── package.json           # Dependencies and scripts
-```
-
 
 ## Documentation
 

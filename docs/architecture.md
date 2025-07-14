@@ -197,7 +197,7 @@ app/
 
 **MemorySlider.tsx**: Horizontal scrolling component for conversation history navigation and context management.
 
-**ToolDock.tsx**: Collapsible sidebar containing specialized tools and utilities (mortality calculators, policy previewers, etc.).
+**StructuredInput.tsx**: Collapsible sidebar containing structured input forms for QuickQuote and LifeExpectancy tools.
 
 **StructuredOutputDock.tsx**: Dynamic display area for structured agent outputs, reports, and visualizations.
 

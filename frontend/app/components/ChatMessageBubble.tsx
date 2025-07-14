@@ -17,6 +17,7 @@ import {
 import { sendFeedback } from "../utils/sendFeedback";
 import { apiBaseUrl } from "../utils/constants";
 import { InlineCitation } from "./InlineCitation";
+import { useFriggState } from '../hooks/useFriggState';
 
 export type Message = {
   id: string;
@@ -127,6 +128,7 @@ export function ChatMessageBubble(props: {
   const [feedbackColor, setFeedbackColor] = useState("");
   const upButtonRef = useRef(null);
   const downButtonRef = useRef(null);
+  const { isDarkMode } = useFriggState();
 
   const cumulativeOffset = function (element: HTMLElement | null) {
     var top = 0,
@@ -301,11 +303,11 @@ export function ChatMessageBubble(props: {
       )}
 
       {isUser ? (
-        <Heading size="lg" fontWeight="medium" color="white">
+        <Heading size="lg" fontWeight="medium" color={isDarkMode ? "white" : "gray.800"}>
           {content}
         </Heading>
       ) : (
-        <Box className="whitespace-pre-wrap" color="white">
+        <Box className="whitespace-pre-wrap" color={isDarkMode ? "white" : "gray.800"}>
           {answerElements}
         </Box>
       )}

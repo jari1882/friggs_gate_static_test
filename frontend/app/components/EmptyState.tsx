@@ -7,8 +7,11 @@ import {
   Flex,
   Spacer,
 } from "@chakra-ui/react";
+import { useFriggState } from '../hooks/useFriggState';
 
 export function EmptyState(props: { onChoice: (question: string) => any }) {
+  const { isDarkMode } = useFriggState();
+  
   const handleClick = (e: MouseEvent) => {
     props.onChoice((e.target as HTMLDivElement).innerText);
   };
@@ -18,17 +21,20 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
+          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          border={"1px solid"}
+          borderColor={isDarkMode ? "gray.600" : "gray.300"}
+          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
           cursor={"pointer"}
           justifyContent={"center"}
+          rounded={"lg"}
         >
           <CardHeader justifyContent={"center"}>
             <Heading
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={"gray.200"}
+              color={isDarkMode ? "gray.200" : "gray.700"}
               textAlign={"center"}
             >
               Run an illustration
@@ -39,17 +45,20 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
+          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          border={"1px solid"}
+          borderColor={isDarkMode ? "gray.600" : "gray.300"}
+          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
           cursor={"pointer"}
           justifyContent={"center"}
+          rounded={"lg"}
         >
           <CardHeader justifyContent={"center"}>
             <Heading
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={"gray.200"}
+              color={isDarkMode ? "gray.200" : "gray.700"}
               textAlign={"center"}
             >
               Get a quick quote
@@ -61,20 +70,23 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
+          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          border={"1px solid"}
+          borderColor={isDarkMode ? "gray.600" : "gray.300"}
+          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
           cursor={"pointer"}
           justifyContent={"center"}
+          rounded={"lg"}
         >
           <CardHeader justifyContent={"center"}>
             <Heading
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={"gray.200"}
+              color={isDarkMode ? "gray.200" : "gray.700"}
               textAlign={"center"}
             >
-              Experience SIM-KB: the life insurance industry's new structured information management base
+              Experience SIM-KB
             </Heading>
           </CardHeader>
         </Card>
@@ -82,17 +94,20 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
+          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          border={"1px solid"}
+          borderColor={isDarkMode ? "gray.600" : "gray.300"}
+          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
           cursor={"pointer"}
           justifyContent={"center"}
+          rounded={"lg"}
         >
           <CardHeader justifyContent={"center"}>
             <Heading
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={"gray.200"}
+              color={isDarkMode ? "gray.200" : "gray.700"}
               textAlign={"center"}
             >
               About Frigg and the life nervous system
