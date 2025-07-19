@@ -120,6 +120,15 @@ LNS is a production-grade cognitive architecture that converts human intent into
 - `yarn lint` - Run linting
 - `yarn format` - Format code with Prettier
 
+### Testing Changes
+
+Before committing, test your changes:
+```bash
+cd frontend
+yarn lint
+yarn build
+```
+
 ## Usage
 
 ### Basic Chat Interface
@@ -167,7 +176,12 @@ The frontend communicates with the Bifröst backend via structured JSON payloads
 
 ## Contributing
 
-Please read `CONTRIBUTING.md` for details on our code of conduct and the process for submitting pull requests.
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and test them (see Testing Changes section above)
+4. Commit with a clear message: `git commit -m "Add: your feature description"`
+5. Push to your fork: `git push origin feature/your-feature-name`
+6. Create a Pull Request
 
 ## License
 
