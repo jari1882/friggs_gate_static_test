@@ -10,6 +10,7 @@ import MemorySlider from "./MemorySlider";
 import StructuredInput from "./StructuredInput";
 import ThemeToggle from "./ThemeToggle";
 import StructuredOutputDock from "./StructuredOutputDock";
+import FontSelector from "./FontSelector";
 import { useFriggState } from "../hooks/useFriggState";
 import { marked } from "marked";
 import { Renderer } from "marked";
@@ -49,6 +50,7 @@ export function ChatWindow(props: { conversationId: string }) {
     isStructuredInputMinimized,
     isStructuredOutputMinimized,
     isDarkMode,
+    selectedFont,
     memories,
     setStructuredInputWidth,
     setStructuredOutputDockWidth,
@@ -58,15 +60,58 @@ export function ChatWindow(props: { conversationId: string }) {
   } = useFriggState();
 
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
+  const mainChatRef = useRef<HTMLDivElement | null>(null);
   const [messages, setMessages] = useState<Array<Message>>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [mainChatWidth, setMainChatWidth] = useState(0);
   const [llm, setLlm] = useState(
     searchParams.get("llm") ?? "openai_gpt_3_5_turbo",
   );
   useEffect(() => {
     setLlm(searchParams.get("llm") ?? defaultLlmValue);
   }, [searchParams]);
+
+  // Handle font changes
+  useEffect(() => {
+    const fontOptions = [
+      { value: 'inter', family: 'Inter, sans-serif' },
+      { value: 'roboto', family: 'Roboto, sans-serif' },
+      { value: 'open-sans', family: 'Open Sans, sans-serif' },
+      { value: 'lato', family: 'Lato, sans-serif' },
+      { value: 'poppins', family: 'Poppins, sans-serif' },
+      { value: 'montserrat', family: 'Montserrat, sans-serif' },
+      { value: 'source-sans', family: 'Source Sans Pro, sans-serif' },
+      { value: 'ubuntu', family: 'Ubuntu, sans-serif' },
+      { value: 'nunito', family: 'Nunito, sans-serif' },
+      { value: 'system', family: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif' },
+      { value: 'fira-code', family: 'Fira Code, Consolas, Monaco, monospace' },
+      { value: 'jetbrains-mono', family: 'JetBrains Mono, Consolas, Monaco, monospace' }
+    ];
+    
+    const selectedFontOption = fontOptions.find(font => font.value === selectedFont);
+    if (selectedFontOption) {
+      document.body.style.fontFamily = selectedFontOption.family;
+    }
+  }, [selectedFont]);
+
+  // Track main chat area width
+  useEffect(() => {
+    const mainChatElement = mainChatRef.current;
+    if (!mainChatElement) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setMainChatWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(mainChatElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   const [chatHistory, setChatHistory] = useState<
     { human: string; ai: string }[]
@@ -216,7 +261,10 @@ export function ChatWindow(props: { conversationId: string }) {
           <h1 className={`text-xl font-medium transition-colors duration-200 ${
             isDarkMode ? 'text-white' : 'text-gray-800'
           }`}>Frigg&apos;s Gate</h1>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <FontSelector />
+            <ThemeToggle />
+          </div>
         </div>
         
         {/* Memory slider in header */}
@@ -239,43 +287,47 @@ export function ChatWindow(props: { conversationId: string }) {
         />
 
         {/* Main Chat Area */}
-        <div className={`flex-1 flex flex-col min-w-0 transition-colors duration-200 ${
-          isDarkMode ? 'bg-gray-900' : 'bg-white'
-        }`}>
-          
-          {/* Main question */}
-          <div className="flex-shrink-0 p-6">
-            <h2 className={`text-lg font-medium text-center mb-6 transition-colors duration-200 ${
-              isDarkMode ? 'text-white' : 'text-gray-800'
-            }`}>
-              What can the Life Nervous System Help You With?
-            </h2>
-          </div>
+        <div 
+          ref={mainChatRef}
+          className={`flex-1 flex flex-col min-w-0 transition-colors duration-200 ${
+            isDarkMode ? 'bg-gray-900' : 'bg-white'
+          }`}
+        >
+          {mainChatWidth > 200 ? (
+            <>
+              {/* Main question */}
+              <div className="flex-shrink-0 p-6">
+                <h2 className={`text-lg font-medium text-center mb-6 transition-colors duration-200 ${
+                  isDarkMode ? 'text-white' : 'text-gray-800'
+                }`}>
+                  What can the Life Nervous System Help You With?
+                </h2>
+              </div>
 
-          {/* Messages */}
-          <div
-            className="flex flex-col-reverse flex-1 overflow-auto px-4"
-            ref={messageContainerRef}
-          >
-            {messages.length > 0 ? (
-              [...messages]
-                .reverse()
-                .map((m, index) => (
-                  <ChatMessageBubble
-                    key={m.id}
-                    message={{ ...m }}
-                    aiEmoji="🦜"
-                    isMostRecent={index === 0}
-                    messageCompleted={!isLoading}
-                  ></ChatMessageBubble>
-                ))
-            ) : (
-              <EmptyState onChoice={sendInitialQuestion} />
-            )}
-          </div>
+              {/* Messages */}
+              <div
+                className="flex flex-col-reverse flex-1 overflow-auto px-4"
+                ref={messageContainerRef}
+              >
+                {messages.length > 0 ? (
+                  [...messages]
+                    .reverse()
+                    .map((m, index) => (
+                      <ChatMessageBubble
+                        key={m.id}
+                        message={{ ...m }}
+                        aiEmoji="🦜"
+                        isMostRecent={index === 0}
+                        messageCompleted={!isLoading}
+                      ></ChatMessageBubble>
+                    ))
+                ) : (
+                  <EmptyState onChoice={sendInitialQuestion} />
+                )}
+              </div>
 
-          {/* Input */}
-          <div className="flex-shrink-0 p-4">
+              {/* Input */}
+              <div className="flex-shrink-0 p-4">
             <div className="max-w-2xl mx-auto">
               <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0 ${
                 isDarkMode 
@@ -333,22 +385,37 @@ export function ChatWindow(props: { conversationId: string }) {
             </div>
           </div>
 
-          {/* Footer */}
-          {messages.length === 0 && (
-            <footer className="flex justify-center p-4">
-              <a
-                href="https://github.com/jari1882/friggs-gate"
-                target="_blank"
-                className={`flex items-center transition-colors duration-200 ${
-                  isDarkMode 
-                    ? 'text-gray-400 hover:text-gray-200' 
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub" />
-                <span>View Source</span>
-              </a>
-            </footer>
+              {/* Footer */}
+              {messages.length === 0 && (
+                <footer className="flex justify-center p-4">
+                  <a
+                    href="https://github.com/jari1882/friggs-gate"
+                    target="_blank"
+                    className={`flex items-center transition-colors duration-200 ${
+                      isDarkMode 
+                        ? 'text-gray-400 hover:text-gray-200' 
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                  >
+                    <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub" />
+                    <span>View Source</span>
+                  </a>
+                </footer>
+              )}
+            </>
+          ) : (
+            /* Drag indicator when too narrow */
+            <div className="flex-1 flex items-center justify-center">
+              <div className={`text-center select-none transition-colors duration-200 ${
+                isDarkMode ? 'text-gray-500' : 'text-gray-400'
+              }`}>
+                <div className="flex items-center gap-2 text-sm">
+                  <span>←</span>
+                  <span>Drag to Display</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 

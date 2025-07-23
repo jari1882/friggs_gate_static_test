@@ -229,7 +229,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
         </label>
       </div>
       
-      <button className={buttonClassName('green')}>
+      <button className={buttonClassName('blue')}>
         Calculate Life Expectancy
       </button>
     </div>

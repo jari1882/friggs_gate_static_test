@@ -12,6 +12,7 @@ interface FriggState {
   
   // Theme state
   isDarkMode: boolean;
+  selectedFont: string;
   
   // Layout actions
   setStructuredInputWidth: (width: number) => void;
@@ -23,6 +24,7 @@ interface FriggState {
   // Theme actions
   toggleTheme: () => void;
   setTheme: (isDark: boolean) => void;
+  setFont: (font: string) => void;
   
   // Memory state
   memories: string[];
@@ -43,6 +45,7 @@ export const useFriggState = create<FriggState>((set) => ({
   
   // Initial theme state
   isDarkMode: false,
+  selectedFont: 'inter',
   
   // Layout actions
   setStructuredInputWidth: (width) => set({ structuredInputWidth: width }),
@@ -54,6 +57,7 @@ export const useFriggState = create<FriggState>((set) => ({
   // Theme actions
   toggleTheme: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
   setTheme: (isDark) => set({ isDarkMode: isDark }),
+  setFont: (font) => set({ selectedFont: font }),
   
   // Initial memory state
   memories: ['Conversation 1 - 10/31', 'Conversation 2 - Today', 'Conversation 3 - 10/29', 'Conversation 4 - 10/28', 'Conversation 5 - 10/27'],

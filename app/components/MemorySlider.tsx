@@ -12,6 +12,24 @@ interface MemorySliderProps {
 const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
   const { isDarkMode } = useFriggState();
   
+  // Add dynamic CSS for dark mode scrollbar
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .memory-slider-scrollbar::-webkit-scrollbar-thumb {
+        background: ${isDarkMode ? '#4B5563' : '#D1D5DB'};
+      }
+      .memory-slider-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: ${isDarkMode ? '#6B7280' : '#9CA3AF'};
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, [isDarkMode]);
+  
   return (
     <div className="w-full">
       <div className={`border rounded-lg p-6 transition-colors duration-200 ${
@@ -19,7 +37,13 @@ const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
           ? 'border-gray-600 bg-gray-800' 
           : 'border-gray-300 bg-white'
       }`}>
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide">
+        <div 
+          className="flex gap-4 overflow-x-auto pb-6 memory-slider-scrollbar" 
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: isDarkMode ? '#4B5563 #1F2937' : '#D1D5DB #F9FAFB'
+          }}
+        >
           {memories.map((memory, index) => (
             <motion.button
               key={index}

@@ -85,6 +85,80 @@ LNS is a production-grade cognitive architecture that converts human intent into
 - **Data Layer**: SQLite (default), PostgreSQL/DuckDB/MotherDuck (testing), Chroma (vector search)
 - **Intelligence**: LLM integration with streaming responses and citations
 
+### Detailed Technology Stack
+
+| Component | Technology | Version | Purpose |
+|-----------|------------|---------|---------|
+| **Framework** | Next.js | 13.5.4 | App Router, SSR, React Server Components |
+| **Runtime** | React | 18.2.0 | Virtual DOM, Component System, Concurrent Features |
+| **Language** | TypeScript | 5.1.6 | Type Safety, Developer Experience |
+| **Styling** | Tailwind CSS | 3.3.3 | Utility-First CSS Framework |
+| **UI Components** | Chakra UI | 2.8.1 | Design System, Accessible Components |
+| **CSS-in-JS** | Emotion | 11.11.0 | Dynamic Styling, Theme Support |
+| **Package Manager** | Yarn | 1.22.19 | Dependency Management, Workspaces |
+
+### Component Organization
+
+**File Structure:**
+```
+├── app/
+│   ├── layout.tsx          # Root layout with global providers
+│   ├── page.tsx            # Main chat interface entry point
+│   ├── globals.css         # Global styling and theme definitions
+│   ├── components/
+│   │   ├── ChatWindow.tsx           # Primary interface orchestration
+│   │   ├── ChatMessageBubble.tsx    # Individual message rendering
+│   │   ├── EmptyState.tsx          # Welcome screen and action cards
+│   │   ├── AutoResizeTextarea.tsx   # Dynamic input component
+│   │   ├── InlineCitation.tsx      # Source reference display
+│   │   └── SourceBubble.tsx        # Source information cards
+│   ├── hooks/
+│   │   └── useFriggState.ts        # State management
+│   └── utils/
+│       ├── constants.tsx           # Configuration and API endpoints
+│       └── sendFeedback.tsx        # User interaction tracking
+├── public/
+│   ├── brain-favicon.ico           # Application branding
+│   └── images/                     # Static assets and icons
+├── package.json                    # Dependencies and scripts
+├── next.config.js                  # Next.js configuration
+├── tailwind.config.ts              # Tailwind CSS configuration
+└── tsconfig.json                   # TypeScript configuration
+```
+
+**Component Hierarchy:**
+```
+App (layout.tsx)
+├── ChakraProvider (styling context)
+├── Page (page.tsx)
+    └── ChatWindow (main interface)
+        ├── EmptyState (initial welcome)
+        │   └── ActionCards (quick actions)
+        ├── MessageList (conversation history)
+        │   └── ChatMessageBubble (individual messages)
+        │       ├── InlineCitation (source references)
+        │       └── SourceBubble (source details)
+        └── InputArea
+            └── AutoResizeTextarea (user input)
+```
+
+### Backend Architecture (Bifröst)
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Orchestration** | LangGraph | Agent workflow management |
+| **API Framework** | LangServe + FastAPI | HTTP API endpoints |
+| **Language** | Python | Backend runtime |
+| **Expression Language** | LCEL | LangChain pipelines |
+| **Tracing** | LangSmith | Execution monitoring |
+| **High Performance** | Rust | Performance-critical operations |
+
+**Cypher Agents:**
+- **Quick Quote**: Insurance pricing calculations
+- **Life Expectancy + Basic Illustration**: Actuarial analysis
+- **Underwriter Educator**: Risk assessment guidance  
+- **About Frigg and LNS**: System information and help
+
 ## Installation
 
 ### Prerequisites
@@ -95,22 +169,17 @@ LNS is a production-grade cognitive architecture that converts human intent into
 
 ### Frontend Setup
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    yarn install
    ```
 
-3. Start the development server:
+2. Start the development server:
    ```bash
    yarn dev
    ```
 
-4. Open your browser to [http://localhost:3000](http://localhost:3000)
+3. Open your browser to [http://localhost:3000](http://localhost:3000)
 
 ### Available Scripts
 
@@ -124,7 +193,6 @@ LNS is a production-grade cognitive architecture that converts human intent into
 
 Before committing, test your changes:
 ```bash
-cd frontend
 yarn lint
 yarn build
 ```
@@ -146,6 +214,29 @@ yarn build
 - **Endpoint**: `POST /ask/invoke`
 - **Purpose**: Submit questions to the 🌀 Bifröst cognitive orchestration engine
 
+### API Contract
+
+**Request Format:**
+```json
+{
+  "input": {
+    "version": "1.0",
+    "question": "user question",
+    "chat_history": [],
+    "metadata": {
+      "caller": "frontend_app",
+      "purpose": "query_type",
+      "timestamp": "2025-06-06T13:45:00Z"
+    },
+    "session": {
+      "user_id": "user-id",
+      "context": {}
+    },
+    "stream": false
+  }
+}
+```
+
 The frontend communicates with the Bifröst backend via structured JSON payloads. For detailed API documentation including request/response schemas, authentication, and error handling, see [`docs/API.md`](docs/API.md).
 
 ## Features
@@ -157,6 +248,22 @@ The frontend communicates with the Bifröst backend via structured JSON payloads
 - **Error Handling**: Comprehensive error reporting and user feedback
 - **Session Management**: Persistent conversation history
 
+### Security Features
+
+- **XSS Protection**: DOMPurify for user content sanitization
+- **HTTPS Enforcement**: TLS encryption for all communications
+- **Content Security Policy**: Restrictive CSP headers
+- **Input Validation**: Client-side validation before API calls
+- **Secure Communication**: Encrypted transmission of all data
+
+### Performance Features
+
+- **Server-Side Rendering**: Next.js SSR for fast initial loads
+- **Code Splitting**: Dynamic imports for reduced bundle size
+- **Image Optimization**: Next.js automatic image optimization
+- **Caching**: Browser caching for static assets
+- **Streaming Responses**: Real-time response streaming for LLM interactions
+
 ## Development
 
 ### Tech Stack
@@ -166,13 +273,29 @@ The frontend communicates with the Bifröst backend via structured JSON payloads
 - **Enhanced UX**: React Toastify, Framer Motion, Marked, Highlight.js
 - **Package Manager**: Yarn 1.22.19
 
+### Deployment Architecture
+
+**Development:**
+```
+Local Machine
+├── Frontend: next dev (Port 3000)
+├── Backend: uvicorn (Port 8000)  
+└── Database: SQLite (Local file)
+```
+
+**Production:**
+```
+Vercel Platform
+├── Frontend: Static + Serverless Functions
+├── Backend: Docker Container or Serverless
+└── Database: PostgreSQL/DuckDB (Cloud)
+```
+
 
 ## Documentation
 
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) - Detailed system architecture and component design
 - [`docs/API.md`](docs/API.md) - Complete API documentation and contracts
 - [`docs/friggs_gate_frontend_guide.md`](docs/friggs_gate_frontend_guide.md) - Comprehensive frontend implementation guide
-- [`docs/UI-PANEL-REDESIGN.md`](docs/UI-PANEL-REDESIGN.md) - UI design evolution and panel system
 
 ## Contributing
 

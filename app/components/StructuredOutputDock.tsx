@@ -98,9 +98,6 @@ const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({
       <div className={`p-4 border-b flex items-center justify-between transition-colors duration-200 ${
         isDarkMode ? 'border-gray-700' : 'border-gray-200'
       }`}>
-        <h3 className={`text-lg font-semibold transition-colors duration-200 ${
-          isDarkMode ? 'text-white' : 'text-gray-800'
-        }`}>Structured Output</h3>
         <button 
           onClick={onToggleMinimize}
           className={`p-1 rounded transition-colors duration-200 ${
@@ -111,6 +108,9 @@ const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
           }`} />
         </button>
+        <h3 className={`text-lg font-semibold transition-colors duration-200 ${
+          isDarkMode ? 'text-white' : 'text-gray-800'
+        }`}>Structured Output</h3>
       </div>
       
       <div className="p-4 flex-1 overflow-y-auto">
