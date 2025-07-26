@@ -12,6 +12,7 @@ import ThemeToggle from "./ThemeToggle";
 import StructuredOutputDock from "./StructuredOutputDock";
 import FontSelector from "./FontSelector";
 import { useFriggState } from "../hooks/useFriggState";
+import { useWorkspaceCoordinator } from "../hooks/useWorkspaceCoordinator";
 import { marked } from "marked";
 import { Renderer } from "marked";
 import hljs from "highlight.js";
@@ -47,17 +48,25 @@ export function ChatWindow(props: { conversationId: string }) {
     structuredInputWidth,
     structuredOutputDockWidth,
     isStructuredOutputOpen,
-    isStructuredInputMinimized,
-    isStructuredOutputMinimized,
     isDarkMode,
     selectedFont,
     memories,
     setStructuredInputWidth,
     setStructuredOutputDockWidth,
-    setStructuredInputMinimized,
-    setStructuredOutputMinimized,
     selectMemory
   } = useFriggState();
+
+  // Workspace coordinator - handles agent-driven panel behavior
+  const {
+    isStructuredInputMinimized,
+    isStructuredOutputMinimized,
+    selectedTool,
+    showEmptyStateButtons,
+    processBackendResponse,
+    hideEmptyStateButtons,
+    toggleStructuredInput,
+    toggleStructuredOutput
+  } = useWorkspaceCoordinator();
 
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
   const mainChatRef = useRef<HTMLDivElement | null>(null);
@@ -126,6 +135,10 @@ export function ChatWindow(props: { conversationId: string }) {
     }
     const messageValue = message ?? input;
     if (messageValue === "") return;
+    
+    // Hide empty state buttons when user sends a message
+    hideEmptyStateButtons();
+    
     setInput("");
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -197,6 +210,9 @@ export function ChatWindow(props: { conversationId: string }) {
       if (data.output?.status === "failed") {
         throw new Error(data.output?.error || "API request failed");
       }
+
+      // Process backend response for agent activations and UI state changes
+      processBackendResponse(data);
 
       const answer = data.output?.answer || "No response received";
       runId = data.output?.run_id || Math.random().toString();
@@ -283,7 +299,7 @@ export function ChatWindow(props: { conversationId: string }) {
           width={structuredInputWidth}
           onResize={setStructuredInputWidth}
           isMinimized={isStructuredInputMinimized}
-          onToggleMinimize={() => setStructuredInputMinimized(!isStructuredInputMinimized)}
+          onToggleMinimize={toggleStructuredInput}
         />
 
         {/* Main Chat Area */}
@@ -322,7 +338,7 @@ export function ChatWindow(props: { conversationId: string }) {
                       ></ChatMessageBubble>
                     ))
                 ) : (
-                  <EmptyState onChoice={sendInitialQuestion} />
+                  showEmptyStateButtons && <EmptyState onChoice={sendInitialQuestion} />
                 )}
               </div>
 
@@ -420,16 +436,13 @@ export function ChatWindow(props: { conversationId: string }) {
         </div>
 
         {/* Right Sidebar - Structured Output */}
-        {isStructuredOutputOpen && (
+        {(isStructuredOutputOpen || !isStructuredOutputMinimized) && (
           <StructuredOutputDock
-            content={<div className={`transition-colors duration-200 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>Structured output will appear here...</div>}
-            isOpen={isStructuredOutputOpen}
+            isOpen={isStructuredOutputOpen || !isStructuredOutputMinimized}
             width={structuredOutputDockWidth}
             onResize={setStructuredOutputDockWidth}
             isMinimized={isStructuredOutputMinimized}
-            onToggleMinimize={() => setStructuredOutputMinimized(!isStructuredOutputMinimized)}
+            onToggleMinimize={toggleStructuredOutput}
           />
         )}
       </div>

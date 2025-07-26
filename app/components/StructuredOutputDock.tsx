@@ -3,10 +3,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useFriggState } from '../hooks/useFriggState';
+import { useWorkspaceCoordinator } from '../hooks/useWorkspaceCoordinator';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 
 interface StructuredOutputDockProps {
-  content: React.ReactNode;
   isOpen: boolean;
   width: number;
   onResize: (width: number) => void;
@@ -15,7 +15,6 @@ interface StructuredOutputDockProps {
 }
 
 const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({ 
-  content, 
   isOpen, 
   width, 
   onResize,
@@ -25,6 +24,7 @@ const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({
   const [isResizing, setIsResizing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { isDarkMode } = useFriggState();
+  const { structuredOutputContent } = useWorkspaceCoordinator();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -68,11 +68,11 @@ const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({
           <button 
             onClick={onToggleMinimize}
             className={`p-1 rounded transition-colors duration-200 ${
-              isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+              isDarkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-600'
             }`}
           >
             <ChevronUpIcon className={`w-5 h-5 transition-colors duration-200 transform -rotate-90 ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              isDarkMode ? 'text-white' : 'text-gray-600'
             }`} />
           </button>
         </div>
@@ -95,17 +95,17 @@ const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({
         onMouseDown={() => setIsResizing(true)}
       />
       
-      <div className={`p-4 border-b flex items-center justify-between transition-colors duration-200 ${
+      <div className={`p-4 border-b flex items-center justify-center relative transition-colors duration-200 ${
         isDarkMode ? 'border-gray-700' : 'border-gray-200'
       }`}>
         <button 
           onClick={onToggleMinimize}
-          className={`p-1 rounded transition-colors duration-200 ${
-            isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+          className={`absolute left-4 p-1 rounded transition-colors duration-200 ${
+            isDarkMode ? 'hover:bg-gray-700 text-white' : 'hover:bg-gray-100 text-gray-600'
           }`}
         >
-          <ChevronDownIcon className={`w-5 h-5 transition-colors duration-200 transform rotate-90 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          <ChevronDownIcon className={`w-5 h-5 transition-colors duration-200 transform -rotate-90 ${
+            isDarkMode ? 'text-white' : 'text-gray-600'
           }`} />
         </button>
         <h3 className={`text-lg font-semibold transition-colors duration-200 ${
@@ -119,7 +119,11 @@ const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {content}
+          <div className={`whitespace-pre-line transition-colors duration-200 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            {structuredOutputContent}
+          </div>
         </motion.div>
       </div>
     </div>

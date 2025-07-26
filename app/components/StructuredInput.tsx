@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import { useFriggState } from '../hooks/useFriggState';
+import { useWorkspaceCoordinator } from '../hooks/useWorkspaceCoordinator';
 
 type ToolType = 'QuickQuote' | 'LifeExpectancy';
 
@@ -36,7 +37,6 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   onToggleMinimize 
 }) => {
   const [isResizing, setIsResizing] = useState(false);
-  const [selectedTool, setSelectedTool] = useState<ToolType>('QuickQuote');
   const [quickQuoteParams, setQuickQuoteParams] = useState<QuickQuoteParams>({
     age: '',
     gender: '',
@@ -53,6 +53,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   
   const containerRef = useRef<HTMLDivElement>(null);
   const { isDarkMode } = useFriggState();
+  const { selectedTool, formValidationMessage, setFormValidationMessage, openStructuredOutput, openStructuredInput } = useWorkspaceCoordinator();
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -85,10 +86,47 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
 
   const handleQuickQuoteChange = (field: keyof QuickQuoteParams, value: string) => {
     setQuickQuoteParams(prev => ({ ...prev, [field]: value }));
+    // Clear validation message when user starts editing
+    if (formValidationMessage) {
+      setFormValidationMessage(null);
+    }
   };
 
   const handleLifeExpectancyChange = (field: keyof LifeExpectancyParams, value: string | boolean) => {
     setLifeExpectancyParams(prev => ({ ...prev, [field]: value }));
+    // Clear validation message when user starts editing
+    if (formValidationMessage) {
+      setFormValidationMessage(null);
+    }
+  };
+
+  // Form validation functions
+  const validateQuickQuoteForm = (): boolean => {
+    const { age, gender, smoker, coverageAmount } = quickQuoteParams;
+    return age !== '' && gender !== '' && smoker !== '' && coverageAmount !== '';
+  };
+
+  const validateLifeExpectancyForm = (): boolean => {
+    const { age, gender, lifestyle } = lifeExpectancyParams;
+    return age !== '' && gender !== '' && lifestyle !== '';
+  };
+
+  const handleFormSubmit = (toolType: ToolType) => {
+    const isValid = toolType === 'QuickQuote' 
+      ? validateQuickQuoteForm() 
+      : validateLifeExpectancyForm();
+    
+    if (!isValid) {
+      setFormValidationMessage('This form is missing required fields');
+      return;
+    }
+    
+    // Form is valid - open structured output with placeholder content
+    const content = toolType === 'QuickQuote'
+      ? `Quick Quote Results:\n\nAge: ${quickQuoteParams.age}\nGender: ${quickQuoteParams.gender}\nSmoker: ${quickQuoteParams.smoker}\nCoverage: $${quickQuoteParams.coverageAmount}\n\nEstimated monthly premium: $XX.XX`
+      : `Life Expectancy Results:\n\nAge: ${lifeExpectancyParams.age}\nGender: ${lifeExpectancyParams.gender}\nLifestyle: ${lifeExpectancyParams.lifestyle}\n\nEstimated life expectancy: XX years`;
+    
+    openStructuredOutput(content);
   };
 
   // Helper functions for consistent theming
@@ -158,7 +196,10 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
         />
       </div>
       
-      <button className={buttonClassName('blue')}>
+      <button 
+        className={buttonClassName('blue')}
+        onClick={() => handleFormSubmit('QuickQuote')}
+      >
         Get Quote
       </button>
     </div>
@@ -229,7 +270,10 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
         </label>
       </div>
       
-      <button className={buttonClassName('blue')}>
+      <button 
+        className={buttonClassName('blue')}
+        onClick={() => handleFormSubmit('LifeExpectancy')}
+      >
         Calculate Life Expectancy
       </button>
     </div>
@@ -245,9 +289,13 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
         }`}>
           <button 
             onClick={onToggleMinimize}
-            className="p-1 hover:bg-gray-100 rounded"
+            className={`p-1 rounded transition-colors duration-200 ${
+              isDarkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'
+            }`}
           >
-            <ChevronUpIcon className="w-5 h-5 text-gray-600 transform rotate-90" />
+            <ChevronUpIcon className={`w-5 h-5 transform rotate-90 transition-colors duration-200 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            }`} />
           </button>
         </div>
       </div>
@@ -257,54 +305,98 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   return (
     <div 
       ref={containerRef}
-      className={`h-full border-r shadow-sm relative flex-shrink-0 transition-colors duration-200 ${
+      className={`h-full border-r shadow-sm relative flex-shrink-0 flex flex-col transition-colors duration-200 ${
         isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
       }`}
       style={{ width }}
     >
       <div 
-        className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:bg-gray-300 cursor-col-resize transition-colors"
+        className={`absolute top-0 right-0 w-1 h-full cursor-col-resize transition-colors ${
+          isDarkMode 
+            ? 'bg-gray-600 hover:bg-gray-500' 
+            : 'bg-gray-200 hover:bg-gray-300'
+        }`}
         onMouseDown={() => setIsResizing(true)}
       />
       
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-800">Structured Input</h3>
+      <div className={`p-4 border-b flex items-center justify-center relative transition-colors duration-200 ${
+        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+      }`}>
+        <h3 className={`text-lg font-semibold transition-colors duration-200 ${
+          isDarkMode ? 'text-white' : 'text-gray-800'
+        }`}>Structured Input</h3>
         <button 
           onClick={onToggleMinimize}
-          className="p-1 hover:bg-gray-100 rounded"
+          className={`absolute right-4 p-1 rounded transition-colors duration-200 ${
+            isDarkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'
+          }`}
         >
-          <ChevronDownIcon className="w-5 h-5 text-gray-600 transform rotate-90" />
+          <ChevronDownIcon className={`w-5 h-5 transform rotate-90 transition-colors duration-200 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`} />
         </button>
       </div>
       
-      <div className="p-4 border-b border-gray-200">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Select Tool</label>
+      <div className={`p-4 border-b transition-colors duration-200 ${
+        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+      }`}>
+        <label className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
+          isDarkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}>Select Tool</label>
         <select
-          value={selectedTool}
-          onChange={(e) => setSelectedTool(e.target.value as ToolType)}
+          value={selectedTool || ''}
+          onChange={(e) => {
+            const value = e.target.value as 'QuickQuote' | 'LifeExpectancy' | '';
+            if (value) {
+              openStructuredInput(value);
+            }
+          }}
           className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
             isDarkMode 
               ? 'bg-gray-700 border-gray-600 text-white' 
               : 'bg-white border-gray-300 text-gray-900'
           }`}
         >
+          <option value="">Choose a tool</option>
           <option value="QuickQuote">Quick Quote</option>
-          <option value="LifeExpectancy">Life Expectancy</option>
+          <option value="LifeExpectancy">Life Expectancy Calculator</option>
         </select>
+        <p className={`text-sm mt-2 transition-colors duration-200 ${
+          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+        }`}>
+          Tools can also be selected automatically based on your conversation
+        </p>
       </div>
       
-      <div className="p-4 flex-1 overflow-y-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedTool}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-          >
-            {selectedTool === 'QuickQuote' ? renderQuickQuoteForm() : renderLifeExpectancyForm()}
-          </motion.div>
-        </AnimatePresence>
+      <div className="p-4 flex-1 overflow-y-auto min-h-0">
+        {formValidationMessage && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
+            {formValidationMessage}
+          </div>
+        )}
+        
+        {selectedTool ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedTool}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              {selectedTool === 'QuickQuote' ? renderQuickQuoteForm() : renderLifeExpectancyForm()}
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <div className={`text-center py-8 transition-colors duration-200 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            <p className="mb-2">No tool selected</p>
+            <p className="text-sm">
+              Start a conversation to activate the appropriate tool based on your needs.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
