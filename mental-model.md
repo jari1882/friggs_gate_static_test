@@ -122,29 +122,18 @@ The key insight is that the backend response doesn't just contain an answer - it
 
 ## Backend Integration: Intelligence Coordination
 
-### Agent Activation System
-The backend operates using specialized agents (called "Cyphers") that understand different domains:
-
-**Quick Quote Agent**: Handles questions about life insurance pricing. When activated, it can process requests about coverage amounts, premium calculations, and policy options. The frontend detects this agent through keywords like "quote", "insurance", and "coverage" in the response.
-
-**Life Expectancy Agent**: Manages actuarial analysis and insurance illustrations. It responds to questions about mortality calculations, health factors, and risk assessment. The frontend identifies this agent through phrases containing "life expectancy" or "illustration".
-
-**Underwriter Educator**: Provides guidance on risk assessment and underwriting principles. This agent helps explain insurance concepts, regulations, and best practices.
-
-**System Information Agent**: Responds to questions about Frigg's Gate itself and the Life Nervous System architecture. It provides help and documentation.
-
 ### Coordination Flow
 Here's how the intelligence coordination actually works:
 
-**Request Analysis**: When your message reaches the backend, it analyzes the content to determine intent. Questions about "getting a quote for life insurance" would trigger the Quick Quote Agent. Questions about "life expectancy for a 45-year-old" would activate the Life Expectancy Agent.
+**Request Analysis**: When your message reaches the backend, it processes the content and generates an appropriate response.
 
-**Response Generation**: The activated agent generates a response that includes both conversational content (the actual answer) and implicit signals. These signals are embedded in the response text - not as separate metadata fields, but as natural language that the frontend can detect.
+**Response Generation**: The backend generates responses that may include implicit signals about which UI tools should be available, embedded naturally in the response content.
 
-**Frontend Detection**: When the response comes back, the ResponseInterpreter scans the text for agent activation patterns. It's looking for specific combinations of words that indicate which tools should be available.
+**Frontend Detection**: When the response comes back, the ResponseInterpreter scans the text for UI activation patterns and determines which tools should be shown.
 
-**UI Adaptation**: Based on the detected agents, the frontend automatically adjusts the interface. If a quote agent was detected, the structured input panel slides out with the Quick Quote form pre-selected. The user can then fill out the form to get specific results.
+**UI Adaptation**: Based on the detected patterns, the frontend automatically adjusts the interface to show relevant tools and panels.
 
-**The Gap**: Currently, there's a disconnect between the conversation and the structured tools. The conversation can trigger tool activation, but the tools generate their own placeholder results rather than sending data back to the backend. This suggests the system is designed for future integration where structured forms can enhance or continue the conversation.
+**Current State**: The conversation can trigger tool activation, but the tools generate their own results rather than integrating back with the backend. This suggests the system is designed for future integration where structured forms can enhance the conversation flow.
 
 ## Data Flow Architecture
 
@@ -162,6 +151,88 @@ Backend Response → ResponseInterpreter → WorkspaceCoordinator → UI Updates
 ```
 User Actions → Multiple State Stores → Component Re-renders → UI Updates
 ```
+
+## Information Flow Categories
+
+The system operates through five distinct information flow channels that coordinate between frontend and backend:
+
+### 🟡 1. User Input Events (frontend → backend)
+**Purpose**: Tells the backend what the user just did.
+
+**Includes**:
+- Chat input ("How much is coverage for 77005?")
+- Button presses ("Next", "Edit", "Start over") 
+- Form submissions (`{ zip_code: "77005" }`)
+- Interaction metadata (`clicked_on: "QuoteCard"`)
+- Slash commands (`/submit`, `/edit step 3`)
+
+**Backend uses these to**:
+- Parse for meaning (via deterministic logic or mini-agent)
+- Advance flows
+- Trigger LLM responses or wizard state
+
+### 🟢 2. Client Context Snapshot (frontend → backend)
+**Purpose**: Tells the backend where the user is in the interface and flow.
+
+**Includes**:
+- Current flow mode: "chat", "wizard", "form"
+- UI anchors: Which panel or step is active
+- Viewport/scroll state (optional)
+- Client fingerprint / session ID
+- Quote ID or interaction ID (thread-local state)
+
+**Backend uses these to**:
+- Route correctly
+- Rehydrate state
+- Personalize LLM prompts with current status
+
+### 🧠 3. LLM Streaming Output + Control Directives (backend → frontend)
+**Purpose**: The primary payload from backend. The stream that drives the UI.
+
+**Includes**:
+- Streamed markdown / plain text messages
+- Inline render tokens (`<<start:QuoteCard>>`)
+- Embedded form schemas
+- `openPanel`, `setFocus`, `highlightElement`, etc.
+- Chat card instructions, editable summaries, modals
+- Expected next input state (`expecting: zip_code`)
+
+**This is the "switchboard instruction stream"** — the full set of levers the frontend responds to in real time.
+
+### 📟 4. Post-Stream UI Control Envelope (backend → frontend)
+**Purpose**: Wrap-up instructions after the LLM stream completes.
+
+**Includes**:
+- Follow-up UI actions (e.g. open wizard step, transition state)
+- Set focus, scroll to a step, enable a button
+- `expecting: zip_code` or other hints for structured UI to prepare
+- Mini-agent hints (backend internal)
+
+**This is the "finalization layer"** — a second phase of UI control after the stream completes.
+
+### 📊 5. Analytics / Telemetry (optional) (frontend → backend or logs)
+**Purpose**: Insight into usage, not needed for UX logic.
+
+**Includes**:
+- Time spent on steps
+- Which buttons users clicked
+- Errors or drop-offs
+
+### Hybrid Control Pattern
+
+The system implements **bi-directional, dual-authority control** where both user and backend can control UI elements:
+
+| Actor | Can initiate open/close? | Example |
+|-------|-------------------------|---------|
+| User | ✅ yes | User clicks a tab, toggles form on left |
+| Backend | ✅ yes | Backend says: "Time to collect zip code" |
+
+**Core Rules**:
+- If user opens panel manually → frontend notifies backend (optional)
+- If backend instructs to open panel → frontend obeys
+- If user closes panel manually → state remembered temporarily, but doesn't override future backend requests
+
+**The Switchboard** consists of categories 3 and 4 — these are the channels through which the backend controls the frontend UI behavior.
 
 ## Key Technical Patterns
 
