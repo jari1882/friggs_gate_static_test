@@ -1,6 +1,5 @@
 import "react-toastify/dist/ReactToastify.css";
 import { Card, CardBody, Heading } from "@chakra-ui/react";
-import { sendFeedback } from "../utils/sendFeedback";
 
 export type Source = {
   url: string;
@@ -22,16 +21,9 @@ export function SourceBubble({
 }) {
   return (
     <Card
-      onClick={async () => {
+      onClick={() => {
         window.open(source.url, "_blank");
-        if (runId) {
-          await sendFeedback({
-            key: "user_click",
-            runId,
-            value: source.url,
-            isExplicit: false,
-          });
-        }
+        // HTTP API feedback removed for pure WebSocket implementation
       }}
       backgroundColor={highlighted ? "rgb(58, 58, 61)" : "rgb(78,78,81)"}
       onMouseEnter={onMouseEnter}

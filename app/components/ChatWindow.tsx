@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowUpIcon } from "@chakra-ui/icons";
 import { Source } from "./SourceBubble";
-import { apiBaseUrl } from "../utils/constants";
+import { useWebSocket, WebSocketMessage } from "../hooks/useWebSocket";
 
 const MODEL_TYPES = [
   "openai_gpt_3_5_turbo",
@@ -74,9 +74,14 @@ export function ChatWindow(props: { conversationId: string }) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mainChatWidth, setMainChatWidth] = useState(0);
+  const [chatHistory, setChatHistory] = useState<Array<{ human: string; ai: string }>>([]);
   const [llm, setLlm] = useState(
     searchParams.get("llm") ?? "openai_gpt_3_5_turbo",
   );
+  
+  // WebSocket hook for real-time communication
+  const { sendMessage: sendWebSocketMessage, status: wsStatus, error: wsError, isConnected } = useWebSocket();
+  
   useEffect(() => {
     setLlm(searchParams.get("llm") ?? defaultLlmValue);
   }, [searchParams]);
@@ -122,15 +127,11 @@ export function ChatWindow(props: { conversationId: string }) {
     };
   }, []);
 
-  const [chatHistory, setChatHistory] = useState<
-    { human: string; ai: string }[]
-  >([]);
-
   const sendMessage = async (message?: string) => {
     if (messageContainerRef.current) {
       messageContainerRef.current.classList.add("grow");
     }
-    if (isLoading) {
+    if (isLoading || !isConnected) {
       return;
     }
     const messageValue = message ?? input;
@@ -150,6 +151,7 @@ export function ChatWindow(props: { conversationId: string }) {
     let runId: string | undefined = undefined;
     let sources: Source[] | undefined = undefined;
 
+    // Setup markdown renderer
     let renderer = new Renderer();
     renderer.paragraph = (text) => {
       return text + "\n";
@@ -171,87 +173,79 @@ export function ChatWindow(props: { conversationId: string }) {
       return `<pre class="highlight bg-gray-700" style="padding: 5px; border-radius: 5px; overflow: auto; overflow-wrap: anywhere; white-space: pre-wrap; max-width: 100%; display: block; line-height: 1.2"><code class="${language}" style="color: #d6e2ef; font-size: 12px; ">${highlightedCode}</code></pre>`;
     };
     marked.setOptions({ renderer });
-    try {
-      const bifrostPayload = {
-        input: {
-          version: "1.0",
-          question: messageValue,
-          chat_history: chatHistory,
-          metadata: {
-            caller: "frontend_app",
-            purpose: "chat_request",
-            timestamp: new Date().toISOString(),
-          },
-          session: {
-            user_id: userId,
-            context: {
-              conversation_id: conversationId,
-              llm: llm ?? "openai_gpt_3_5_turbo",
-            },
-          },
-          stream: false,
+
+    // Create WebSocket message (direct BifrostState format, no input wrapper)
+    const webSocketMessage: WebSocketMessage = {
+      question: messageValue,
+      chat_history: chatHistory,
+      metadata: {
+        caller: "frontend_app",
+        purpose: "chat_request",
+        timestamp: new Date().toISOString(),
+      },
+      session: {
+        user_id: userId,
+        context: {
+          conversation_id: conversationId,
+          llm: llm ?? "openai_gpt_3_5_turbo",
         },
-      };
+      },
+      stream: false,
+    };
 
-      const response = await fetch(apiBaseUrl + "/ask/invoke", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bifrostPayload),
-      });
+    // Send via WebSocket
+    sendWebSocketMessage(
+      webSocketMessage,
+      (response) => {
+        // Success handler
+        const answer = response.output?.answer || "No response received";
+        runId = response.output?.run_id || Math.random().toString();
+        
+        // Process backend response if needed
+        if (response.output) {
+          processBackendResponse({ output: response.output });
+        }
+        
+        const parsedResult = marked.parse(answer);
+        accumulatedMessage = answer;
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.output?.status === "failed") {
-        throw new Error(data.output?.error || "API request failed");
-      }
-
-      // Process backend response for agent activations and UI state changes
-      processBackendResponse(data);
-
-      const answer = data.output?.answer || "No response received";
-      runId = data.output?.run_id || Math.random().toString();
-      
-      const parsedResult = marked.parse(answer);
-      accumulatedMessage = answer;
-
-      setMessages((prevMessages) => {
-        const newMessages = [...prevMessages];
-        newMessages.push({
-          id: Math.random().toString(),
-          content: parsedResult.trim(),
-          runId: runId,
-          sources: sources,
-          role: "assistant",
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          newMessages.push({
+            id: Math.random().toString(),
+            content: parsedResult.trim(),
+            runId: runId,
+            sources: sources,
+            role: "assistant",
+          });
+          return newMessages;
         });
-        return newMessages;
-      });
-      setChatHistory((prevChatHistory) => [
-        ...prevChatHistory,
-        { human: messageValue, ai: accumulatedMessage },
-      ]);
-      setIsLoading(false);
-    } catch (e) {
-      setMessages((prevMessages) => prevMessages.slice(0, -1));
-      setIsLoading(false);
-      setInput(messageValue);
-      console.error("Error sending message:", e);
-      
-      // Add error message to chat
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { 
-          id: Math.random().toString(), 
-          content: "Sorry, there was an error processing your message. Please try again.", 
-          role: "assistant" 
-        },
-      ]);
-    }
+        
+        setChatHistory((prevChatHistory) => [
+          ...prevChatHistory,
+          { human: messageValue, ai: accumulatedMessage },
+        ]);
+        
+        setIsLoading(false);
+      },
+      (error) => {
+        // Error handler
+        setMessages((prevMessages) => prevMessages.slice(0, -1));
+        setIsLoading(false);
+        setInput(messageValue);
+        console.error("WebSocket error:", error);
+        
+        // Add error message to chat
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { 
+            id: Math.random().toString(), 
+            content: `Sorry, there was a WebSocket error: ${error}. Please try again.`, 
+            role: "assistant" 
+          },
+        ]);
+      }
+    );
   };
 
   const sendInitialQuestion = async (question: string) => {
@@ -388,12 +382,13 @@ export function ChatWindow(props: { conversationId: string }) {
                       console.error("Error in onClick:", error);
                     }
                   }}
-                  disabled={isLoading}
+                  disabled={isLoading || !isConnected}
+                  title={!isConnected ? `WebSocket ${wsStatus}` : 'Send message'}
                   className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-2 disabled:opacity-50 border transition-colors duration-200 ${
                     isDarkMode 
                       ? 'bg-gray-700 hover:bg-gray-600 text-white border-gray-600' 
                       : 'bg-gray-200 hover:bg-gray-300 text-gray-700 border-gray-300'
-                  }`}
+                  } ${!isConnected ? 'border-red-500' : ''}`}
                 >
                   {isLoading ? <Spinner size="sm" /> : <ArrowUpIcon />}
                 </button>

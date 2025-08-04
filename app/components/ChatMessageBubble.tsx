@@ -14,8 +14,7 @@ import {
   Divider,
   Spacer,
 } from "@chakra-ui/react";
-import { sendFeedback } from "../utils/sendFeedback";
-import { apiBaseUrl } from "../utils/constants";
+// HTTP API features removed for pure WebSocket implementation
 import { InlineCitation } from "./InlineCitation";
 import { useFriggState } from '../hooks/useFriggState';
 
@@ -121,13 +120,7 @@ export function ChatMessageBubble(props: {
 }) {
   const { role, content, runId } = props.message;
   const isUser = role === "user";
-  const [isLoading, setIsLoading] = useState(false);
-  const [traceIsLoading, setTraceIsLoading] = useState(false);
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
-  const [comment, setComment] = useState("");
-  const [feedbackColor, setFeedbackColor] = useState("");
-  const upButtonRef = useRef(null);
-  const downButtonRef = useRef(null);
+  // Feedback and trace features removed for pure WebSocket implementation
   const { isDarkMode } = useFriggState();
 
   const cumulativeOffset = function (element: HTMLElement | null) {
@@ -145,66 +138,7 @@ export function ChatMessageBubble(props: {
     };
   };
 
-  const sendUserFeedback = async (score: number, key: string) => {
-    let run_id = runId;
-    if (run_id === undefined) {
-      return;
-    }
-    if (isLoading) {
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const data = await sendFeedback({
-        score,
-        runId: run_id,
-        key,
-        feedbackId: feedback?.feedback_id,
-        comment,
-        isExplicit: true,
-      });
-      if (data.code === 200) {
-        setFeedback({ run_id, score, key, feedback_id: data.feedbackId });
-        score == 1 ? animateButton("upButton") : animateButton("downButton");
-        if (comment) {
-          setComment("");
-        }
-      }
-    } catch (e: any) {
-      console.error("Error:", e);
-      toast.error(e.message);
-    }
-    setIsLoading(false);
-  };
-  const viewTrace = async () => {
-    try {
-      setTraceIsLoading(true);
-      const response = await fetch(apiBaseUrl + "/get_trace", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          run_id: runId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.code === 400) {
-        toast.error("Unable to view trace");
-        throw new Error("Unable to view trace");
-      } else {
-        const url = data.replace(/['"]+/g, "");
-        window.open(url, "_blank");
-        setTraceIsLoading(false);
-      }
-    } catch (e: any) {
-      console.error("Error:", e);
-      setTraceIsLoading(false);
-      toast.error(e.message);
-    }
-  };
+  // HTTP API functions removed for pure WebSocket implementation
 
   const sources = props.message.sources ?? [];
   const { filtered: filteredSources, indexMap: sourceIndexMap } =
@@ -226,20 +160,13 @@ export function ChatMessageBubble(props: {
         )
       : [];
 
-  const animateButton = (buttonId: string) => {
-    let button: HTMLButtonElement | null;
-    if (buttonId === "upButton") {
-      button = upButtonRef.current;
-    } else if (buttonId === "downButton") {
-      button = downButtonRef.current;
-    } else {
-      return;
-    }
+  const animateButton = (buttonId: string, buttonRef: React.RefObject<HTMLButtonElement>, emoji: string[]) => {
+    const button = buttonRef.current;
     if (!button) return;
-    let resolvedButton = button as HTMLButtonElement;
-    resolvedButton.classList.add("animate-ping");
+    
+    button.classList.add("animate-ping");
     setTimeout(() => {
-      resolvedButton.classList.remove("animate-ping");
+      button.classList.remove("animate-ping");
     }, 500);
 
     emojisplosion({
@@ -247,13 +174,12 @@ export function ChatMessageBubble(props: {
       uniqueness: 1,
       position() {
         const offset = cumulativeOffset(button);
-
         return {
-          x: offset.left + resolvedButton.clientWidth / 2,
-          y: offset.top + resolvedButton.clientHeight / 2,
+          x: offset.left + button.clientWidth / 2,
+          y: offset.top + button.clientHeight / 2,
         };
       },
-      emojis: buttonId === "upButton" ? ["👍"] : ["👎"],
+      emojis: emoji,
     });
   };
 
@@ -312,62 +238,7 @@ export function ChatMessageBubble(props: {
         </Box>
       )}
 
-      {props.message.role !== "user" &&
-        props.isMostRecent &&
-        props.messageCompleted && (
-          <HStack spacing={2}>
-            <Button
-              ref={upButtonRef}
-              size="sm"
-              variant="outline"
-              colorScheme={feedback === null ? "green" : "gray"}
-              onClick={() => {
-                if (feedback === null && props.message.runId) {
-                  sendUserFeedback(1, "user_score");
-                  animateButton("upButton");
-                  setFeedbackColor("border-4 border-green-300");
-                } else {
-                  toast.error("You have already provided your feedback.");
-                }
-              }}
-            >
-              👍
-            </Button>
-            <Button
-              ref={downButtonRef}
-              size="sm"
-              variant="outline"
-              colorScheme={feedback === null ? "red" : "gray"}
-              onClick={() => {
-                if (feedback === null && props.message.runId) {
-                  sendUserFeedback(0, "user_score");
-                  animateButton("downButton");
-                  setFeedbackColor("border-4 border-red-300");
-                } else {
-                  toast.error("You have already provided your feedback.");
-                }
-              }}
-            >
-              👎
-            </Button>
-            <Spacer />
-{/* Hidden for clean UI - uncomment to enable LangSmith tracing */}
-            {/* <Button
-              size="sm"
-              variant="outline"
-              colorScheme={runId === null ? "blue" : "gray"}
-              onClick={(e) => {
-                e.preventDefault();
-                viewTrace();
-              }}
-              isLoading={traceIsLoading}
-              loadingText="🔄"
-              color="white"
-            >
-              🦜🛠️ View trace
-            </Button> */}
-          </HStack>
-        )}
+      {/* HTTP API feedback buttons removed for pure WebSocket implementation */}
 
       {!isUser && <Divider mt={4} mb={4} />}
     </VStack>
