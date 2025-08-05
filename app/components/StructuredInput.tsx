@@ -52,6 +52,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   });
   
   const containerRef = useRef<HTMLDivElement>(null);
+  const firstInputRef = useRef<HTMLInputElement>(null);
   const { isDarkMode } = useFriggState();
   const { selectedTool, formValidationMessage, setFormValidationMessage, openStructuredOutput, openStructuredInput } = useWorkspaceCoordinator();
 
@@ -83,6 +84,16 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isResizing, onResize]);
+
+  // Auto-focus first input when tool is selected
+  useEffect(() => {
+    if (selectedTool && firstInputRef.current) {
+      // Small delay to ensure the form is rendered
+      setTimeout(() => {
+        firstInputRef.current?.focus();
+      }, 100);
+    }
+  }, [selectedTool]);
 
   const handleQuickQuoteChange = (field: keyof QuickQuoteParams, value: string) => {
     setQuickQuoteParams(prev => ({ ...prev, [field]: value }));
@@ -129,6 +140,14 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
     openStructuredOutput(content);
   };
 
+  // Handle Enter key to submit form
+  const handleKeyDown = (event: React.KeyboardEvent, toolType: ToolType) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleFormSubmit(toolType);
+    }
+  };
+
   // Helper functions for consistent theming
   const inputClassName = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
     isDarkMode 
@@ -147,15 +166,17 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   }`;
 
   const renderQuickQuoteForm = () => (
-    <div className="space-y-4">
+    <div className="space-y-4" onKeyDown={(e) => handleKeyDown(e, 'QuickQuote')}>
       <div>
         <label className={labelClassName}>Age</label>
         <input
+          ref={firstInputRef}
           type="number"
           value={quickQuoteParams.age}
           onChange={(e) => handleQuickQuoteChange('age', e.target.value)}
           className={inputClassName}
           placeholder="Enter age"
+          tabIndex={1}
         />
       </div>
       
@@ -165,6 +186,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
           value={quickQuoteParams.gender}
           onChange={(e) => handleQuickQuoteChange('gender', e.target.value)}
           className={inputClassName}
+          tabIndex={2}
         >
           <option value="">Select gender</option>
           <option value="male">Male</option>
@@ -178,6 +200,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
           value={quickQuoteParams.smoker}
           onChange={(e) => handleQuickQuoteChange('smoker', e.target.value)}
           className={inputClassName}
+          tabIndex={3}
         >
           <option value="">Select smoking status</option>
           <option value="yes">Yes</option>
@@ -193,12 +216,14 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
           onChange={(e) => handleQuickQuoteChange('coverageAmount', e.target.value)}
           className={inputClassName}
           placeholder="Enter coverage amount"
+          tabIndex={4}
         />
       </div>
       
       <button 
         className={buttonClassName('blue')}
         onClick={() => handleFormSubmit('QuickQuote')}
+        tabIndex={5}
       >
         Get Quote
       </button>
@@ -206,15 +231,17 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   );
 
   const renderLifeExpectancyForm = () => (
-    <div className="space-y-4">
+    <div className="space-y-4" onKeyDown={(e) => handleKeyDown(e, 'LifeExpectancy')}>
       <div>
         <label className={labelClassName}>Age</label>
         <input
+          ref={firstInputRef}
           type="number"
           value={lifeExpectancyParams.age}
           onChange={(e) => handleLifeExpectancyChange('age', e.target.value)}
           className={inputClassName}
           placeholder="Enter age"
+          tabIndex={1}
         />
       </div>
       
@@ -224,6 +251,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
           value={lifeExpectancyParams.gender}
           onChange={(e) => handleLifeExpectancyChange('gender', e.target.value)}
           className={inputClassName}
+          tabIndex={2}
         >
           <option value="">Select gender</option>
           <option value="male">Male</option>
@@ -239,6 +267,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
           className={`${inputClassName} resize-none`}
           rows={3}
           placeholder="List any health conditions"
+          tabIndex={3}
         />
       </div>
       
@@ -248,6 +277,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
           value={lifeExpectancyParams.lifestyle}
           onChange={(e) => handleLifeExpectancyChange('lifestyle', e.target.value)}
           className={inputClassName}
+          tabIndex={4}
         >
           <option value="">Select lifestyle</option>
           <option value="sedentary">Sedentary</option>
@@ -263,6 +293,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
             checked={lifeExpectancyParams.generateImage}
             onChange={(e) => handleLifeExpectancyChange('generateImage', e.target.checked)}
             className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            tabIndex={5}
           />
           <span className={`text-sm font-medium transition-colors duration-200 ${
             isDarkMode ? 'text-gray-300' : 'text-gray-700'
@@ -273,6 +304,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
       <button 
         className={buttonClassName('blue')}
         onClick={() => handleFormSubmit('LifeExpectancy')}
+        tabIndex={6}
       >
         Calculate Life Expectancy
       </button>
