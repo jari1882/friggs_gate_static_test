@@ -128,10 +128,27 @@ export function ChatWindow(props: { conversationId: string }) {
   }, []);
 
   const sendMessage = async (message?: string) => {
+    console.log('sendMessage called with:', message);
+    console.log('WebSocket status:', wsStatus, 'isConnected:', isConnected, 'isLoading:', isLoading);
+    
     if (messageContainerRef.current) {
       messageContainerRef.current.classList.add("grow");
     }
-    if (isLoading || !isConnected) {
+    if (isLoading) {
+      console.log('Exiting early - already loading');
+      return;
+    }
+    if (!isConnected) {
+      console.log('WebSocket not connected, status:', wsStatus);
+      // Add error message to chat instead of silently failing
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { 
+          id: Math.random().toString(), 
+          content: `Sorry, there was a WebSocket error: WebSocket is not connected. Please try again.`, 
+          role: "assistant" 
+        },
+      ]);
       return;
     }
     const messageValue = message ?? input;
@@ -249,6 +266,9 @@ export function ChatWindow(props: { conversationId: string }) {
   };
 
   const sendInitialQuestion = async (question: string) => {
+    console.log('=== sendInitialQuestion called ===');
+    console.log('Question received:', question);
+    console.log('Current WebSocket state:', { wsStatus, isConnected, error: wsError });
     try {
       await sendMessage(question);
     } catch (e) {

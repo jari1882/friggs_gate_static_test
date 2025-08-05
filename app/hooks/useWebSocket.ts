@@ -46,6 +46,11 @@ export const useWebSocket = () => {
       return;
     }
 
+    // Clean up any existing connection first
+    if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
+      wsRef.current.close();
+    }
+
     setStatus('connecting');
     setError(null);
 
@@ -147,11 +152,22 @@ export const useWebSocket = () => {
     }
   }, []);
 
-  // Auto-connect on mount
+  // Auto-connect on mount with proper cleanup
   useEffect(() => {
-    connect();
+    let mounted = true;
+    
+    const connectIfMounted = () => {
+      if (mounted) {
+        connect();
+      }
+    };
+    
+    // Small delay to prevent React Strict Mode race condition
+    const timer = setTimeout(connectIfMounted, 100);
     
     return () => {
+      mounted = false;
+      clearTimeout(timer);
       disconnect();
     };
   }, [connect, disconnect]);

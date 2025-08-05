@@ -13,7 +13,9 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
   const { isDarkMode } = useFriggState();
   
   const handleClick = (e: MouseEvent) => {
-    props.onChoice((e.target as HTMLDivElement).innerText);
+    const text = (e.target as HTMLDivElement).innerText;
+    console.log('Button clicked, sending:', text);
+    props.onChoice(text);
   };
   return (
     <div className="rounded flex flex-col items-center max-w-full md:p-8">
