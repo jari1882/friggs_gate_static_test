@@ -54,7 +54,7 @@ This store manages **dynamic behavior** that changes based on what's happening i
 **Backend Response Processing**: The key function here is `processBackendResponse()` which takes raw backend responses, runs them through the ResponseInterpreter, and executes the resulting UI actions. This is how backend intelligence drives frontend behavior.
 
 **The Split Matters**: User preferences stay consistent while the workspace adapts. You can have your preferred theme and panel sizes while the system still dynamically shows different tools based on your conversation. The two stores communicate through the components that use both, but they handle fundamentally different concerns.
-1
+
 ### Dynamic Interface Components
 
 #### Left Panel: Structured Input System
@@ -283,6 +283,100 @@ Understanding this architecture helps with:
 - **Dynamic behavior**: Coordinated through workspace state and response interpretation
 
 This system is designed to be **intelligent and adaptive** while maintaining **clear separation between different types of functionality**. The key insight is that the frontend doesn't just display information—it actively coordinates between user input, backend intelligence, and dynamic interface adaptation.
+
+## Visual Architecture: Component Rendering and Layout Hierarchy
+
+The Frigg's Gate interface follows a **layered rendering system** where components are drawn in a specific order, with ChatWindow serving as the foundational layer that subsequent components overlay upon.
+
+### Foundation Layer: Page Structure (`page.tsx` → `layout.tsx`)
+
+The rendering begins at the **root level** with Next.js's layout system:
+
+**Root Layout (`layout.tsx`)**: Establishes the foundational HTML structure with `h-full` classes that ensure the entire viewport is utilized. The body contains a single flex column container with a white background that serves as the canvas for all subsequent components.
+
+**Home Page (`page.tsx`)**: Creates the primary application container through a ChakraProvider wrapper that enables UI component theming. The key structure is a `h-screen overflow-hidden` div that prevents any scrolling at the page level—all scrolling is handled by individual components.
+
+**Component Instantiation**: The page creates a unique `conversationId` and passes it to ChatWindow, making ChatWindow the **sole child component** of the page level. This means ChatWindow is responsible for rendering the entire interface.
+
+### Primary Layer: ChatWindow Foundation
+
+ChatWindow operates as the **master layout controller** and is drawn first as the background layer:
+
+**Container Structure**: The component renders as a `flex flex-col h-screen` container that spans the full viewport height. This creates a vertical layout with a fixed header and flexible content area. The entire container has theme-aware background colors and smooth transitions.
+
+**Header Strip**: A `flex-shrink-0` header section is drawn first, containing the "Frigg's Gate" title, theme controls (FontSelector, ThemeToggle), and the MemorySlider. This header has a fixed height and sits at the top of the screen with a bottom border.
+
+**Main Content Container**: Below the header, a `flex flex-row flex-1 min-h-0` container is created. This is the **primary workspace** where all dynamic content renders. The flex-row layout creates three horizontal zones for left panel, center chat, and right panel.
+
+### Panel Layer System: Dynamic Overlays
+
+Within the main content container, components render in a **left-to-right, priority-based order**:
+
+#### Left Panel: StructuredInput
+**Rendering Logic**: The StructuredInput component is **always rendered first** in the flex-row layout, giving it the leftmost position. Its rendering behavior depends on the minimization state:
+
+- **Expanded State**: Renders as a flexible-width panel (default 300px) with `flex-shrink-0` to prevent compression. The panel includes a right-edge resize handle that overlays the panel content.
+- **Minimized State**: Renders as a fixed 12px-wide strip with only a toggle button visible. The minimized panel maintains its position but yields space to the chat area.
+
+**Physical Boundaries**: The panel enforces minimum (200px) and maximum (60% of screen width) constraints through resize logic. A right border and shadow create visual separation from the chat area.
+
+#### Center Area: Main Chat Interface
+**Positioning Logic**: The chat area uses `flex-1` to consume all available space between the left and right panels. As panels minimize or expand, the chat area automatically adjusts its width while maintaining a minimum 200px width for readability.
+
+**Content Rendering**: Within the chat area, three sub-layers render vertically:
+1. **Question Header**: A centered title asking "What can the Life Nervous System Help You With?"
+2. **Message Container**: A `flex flex-col-reverse` scrollable area where messages render from bottom to top
+3. **Input Area**: A fixed-height input section with the textarea and send button
+
+**Dynamic Adaptation**: When the calculated width drops below 200px (due to panel expansion), the entire chat content hides and is replaced with a minimization message.
+
+#### Right Panel: StructuredOutputDock  
+**Conditional Rendering**: Unlike the left panel, the StructuredOutputDock only renders when `isStructuredOutputOpen || !isStructuredOutputMinimized` evaluates to true. When these conditions aren't met, the component returns `null` and doesn't affect the layout.
+
+**Overlay Behavior**: When active, it renders as the rightmost element with `flex-shrink-0` positioning. Like the left panel, it has expanded (flexible width) and minimized (12px strip) states with similar resize handles and boundaries.
+
+### Z-Index and Overlay Hierarchy
+
+The system uses **positional flow rather than z-index stacking** for most layouts, but specific elements have overlay behavior:
+
+**Resize Handles**: Both panels include `absolute` positioned resize handles (`top-0 right-0` for left panel, `top-0 left-0` for right panel) that overlay their respective panel content. These handles have hover states and cursor changes.
+
+**Toast Notifications**: The ToastContainer (from react-toastify) renders at the ChakraProvider level, making it appear above all other content with its own z-index system.
+
+**Dropdown Overlays**: Form dropdowns and theme selectors use Chakra UI's built-in portal system to render above other content when opened.
+
+### Responsive Layout Logic
+
+The layout system implements **progressive disclosure** based on available space:
+
+**Panel Interaction**: When both panels are expanded and consume too much horizontal space, the center chat area triggers its "insufficient width" state and displays a message encouraging panel minimization.
+
+**Automatic Adjustments**: The `useResizeObserver` effect in ChatWindow continuously monitors the main chat area width and updates components accordingly. This ensures the interface remains functional regardless of panel states.
+
+**Animation Coordination**: All panel state changes include `transition-colors duration-200` classes for smooth visual transitions. Panel resize operations are handled through direct style width updates for performance.
+
+### Component Rendering Order and Dependencies
+
+The actual rendering sequence follows this pattern:
+
+1. **Next.js Layout System** establishes viewport containers
+2. **ChakraProvider** wraps the component tree for theme support  
+3. **ChatWindow** renders as the foundational layout controller
+4. **Header Components** (title, controls, memory slider) render first within ChatWindow
+5. **Left Panel** renders first in the main content flex-row container
+6. **Chat Area** renders second and consumes remaining horizontal space
+7. **Right Panel** renders conditionally as the final element
+8. **Overlay Elements** (resize handles, toasts) render above their parent components
+
+### Layout State Management
+
+The visual architecture coordinates with two state systems:
+
+**Persistent Layout State (`useFriggState`)**: Manages panel widths, minimization preferences, and theme settings that survive across sessions. These states directly control component rendering and styling.
+
+**Dynamic Workspace State (`useWorkspaceCoordinator`)**: Controls conditional rendering of panels and their content based on backend intelligence signals. This state determines when panels appear and what tools they display.
+
+The **key architectural insight** is that ChatWindow serves as both the **visual foundation** and the **coordination hub**—it doesn't just display content, it orchestrates the entire interface layout while maintaining responsive behavior and smooth transitions between different panel configurations.
 
 ---
 
