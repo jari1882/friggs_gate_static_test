@@ -118,11 +118,12 @@ const StructuredOutputDock: React.FC<StructuredOutputDockProps> = ({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
+          className="h-full"
         >
-          <div className={`whitespace-pre-line transition-colors duration-200 ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-700'
-          }`}>
-            {structuredOutputContent}
+          <div className="bg-black rounded-lg p-4 h-full overflow-y-auto border border-gray-600">
+            <div className="text-white font-mono text-sm whitespace-pre-line leading-relaxed">
+              {structuredOutputContent}
+            </div>
           </div>
         </motion.div>
       </div>
