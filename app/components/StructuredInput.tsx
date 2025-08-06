@@ -149,7 +149,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   };
 
   // Helper functions for consistent theming
-  const inputClassName = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+  const inputClassName = `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#305cde] transition-colors duration-200 ${
     isDarkMode 
       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
@@ -161,7 +161,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
   
   const buttonClassName = (color: string) => `w-full text-white py-2 px-4 rounded-md transition-colors ${
     color === 'blue' 
-      ? 'bg-blue-600 hover:bg-blue-700' 
+      ? 'bg-[#305cde] hover:bg-[#2747b8]' 
       : 'bg-green-600 hover:bg-green-700'
   }`;
 
@@ -292,7 +292,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
             type="checkbox"
             checked={lifeExpectancyParams.generateImage}
             onChange={(e) => handleLifeExpectancyChange('generateImage', e.target.checked)}
-            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            className="w-4 h-4 text-[#305cde] border-gray-300 rounded focus:ring-[#305cde]"
             tabIndex={5}
           />
           <span className={`text-sm font-medium transition-colors duration-200 ${
@@ -383,7 +383,7 @@ const StructuredInput: React.FC<StructuredInputProps> = ({
               openStructuredInput(value);
             }
           }}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#305cde] transition-colors duration-200 ${
             isDarkMode 
               ? 'bg-gray-700 border-gray-600 text-white' 
               : 'bg-white border-gray-300 text-gray-900'

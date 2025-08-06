@@ -12,7 +12,7 @@ interface MemorySliderProps {
 
 const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
   const { isDarkMode } = useFriggState();
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(true);
   
   // Add dynamic CSS for dark mode scrollbar
   React.useEffect(() => {

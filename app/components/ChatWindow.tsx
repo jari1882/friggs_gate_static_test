@@ -10,7 +10,6 @@ import MemorySlider from "./MemorySlider";
 import StructuredInput from "./StructuredInput";
 import ThemeToggle from "./ThemeToggle";
 import StructuredOutputDock from "./StructuredOutputDock";
-import FontSelector from "./FontSelector";
 import { useFriggState } from "../hooks/useFriggState";
 import { useWorkspaceCoordinator } from "../hooks/useWorkspaceCoordinator";
 import { marked } from "marked";
@@ -288,11 +287,10 @@ export function ChatWindow(props: { conversationId: string }) {
           : 'bg-white border-gray-200'
       }`}>
         <div className="flex items-center justify-between mb-6">
-          <h1 className={`text-xl font-medium transition-colors duration-200 ${
+          <h1 className={`text-2xl transition-colors duration-200 ${
             isDarkMode ? 'text-white' : 'text-gray-800'
-          }`}>Frigg&apos;s Gate</h1>
+          }`} style={{ fontFamily: "Roboto" }}>Frigg&apos;s Gate</h1>
           <div className="flex items-center gap-3">
-            <FontSelector />
             <ThemeToggle />
           </div>
         </div>
@@ -325,113 +323,205 @@ export function ChatWindow(props: { conversationId: string }) {
         >
           {mainChatWidth > 200 ? (
             <>
-              {/* Main question */}
-              <div className="flex-shrink-0 p-6">
-                <h2 className={`text-lg font-medium text-center mb-6 transition-colors duration-200 ${
-                  isDarkMode ? 'text-white' : 'text-gray-800'
-                }`}>
-                  What can the Life Nervous System Help You With?
-                </h2>
-              </div>
+              {messages.length > 0 ? (
+                <>
+                  {/* Main question */}
+                  <div className="flex-shrink-0 p-6">
+                    <h2 className={`text-2xl font-medium text-center mb-6 transition-colors duration-200 ${
+                      isDarkMode ? 'text-white' : 'text-gray-800'
+                    }`}>
+                      What can the Life Nervous System Do for You?
+                    </h2>
+                  </div>
 
-              {/* Messages */}
-              <div
-                className="flex flex-col-reverse flex-1 overflow-auto px-4"
-                ref={messageContainerRef}
-              >
-                {messages.length > 0 ? (
-                  [...messages]
-                    .reverse()
-                    .map((m, index) => (
-                      <ChatMessageBubble
-                        key={m.id}
-                        message={{ ...m }}
-                        aiEmoji="🦜"
-                        isMostRecent={index === 0}
-                        messageCompleted={!isLoading}
-                      ></ChatMessageBubble>
-                    ))
-                ) : (
-                  showEmptyStateButtons && <EmptyState onChoice={sendInitialQuestion} />
-                )}
-              </div>
-
-              {/* Input */}
-              <div className="flex-shrink-0 p-4">
-            <div className="max-w-2xl mx-auto">
-              <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0 ${
-                isDarkMode 
-                  ? 'bg-gray-800 border-gray-600 focus-within:ring-blue-400 focus-within:border-blue-400' 
-                  : 'bg-gray-100 border-gray-300 focus-within:ring-blue-500 focus-within:border-blue-500'
-              }`}>
-                <div className="pr-12">
-                  <AutoResizeTextarea
-                    value={input}
-                    maxRows={5}
-                    placeholder="Please type here...."
-                    textColor={isDarkMode ? "white" : "black"}
-                    borderColor={"transparent"}
-                    backgroundColor={"transparent"}
-                    focusBorderColor="transparent"
-                    _focus={{
-                      boxShadow: "none",
-                      outline: "none",
-                    }}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={async (e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      try {
-                        await sendMessage();
-                      } catch (error) {
-                        console.error("Error in onKeyDown:", error);
-                      }
-                    } else if (e.key === "Enter" && e.shiftKey) {
-                      e.preventDefault();
-                      setInput(input + "\n");
-                    }
-                  }}
-                  />
-                </div>
-                <button
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    try {
-                      await sendMessage();
-                    } catch (error) {
-                      console.error("Error in onClick:", error);
-                    }
-                  }}
-                  disabled={isLoading || !isConnected}
-                  title={!isConnected ? `WebSocket ${wsStatus}` : 'Send message'}
-                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-2 disabled:opacity-50 border transition-colors duration-200 ${
-                    isDarkMode 
-                      ? 'bg-gray-700 hover:bg-gray-600 text-white border-gray-600' 
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-700 border-gray-300'
-                  } ${!isConnected ? 'border-red-500' : ''}`}
-                >
-                  {isLoading ? <Spinner size="sm" /> : <ArrowUpIcon />}
-                </button>
-              </div>
-            </div>
-          </div>
-
-              {/* Footer */}
-              {messages.length === 0 && (
-                <footer className="flex justify-center p-4">
-                  <a
-                    href="https://github.com/jari1882/friggs-gate"
-                    target="_blank"
-                    className={`flex items-center transition-colors duration-200 ${
-                      isDarkMode 
-                        ? 'text-gray-400 hover:text-gray-200' 
-                        : 'text-gray-600 hover:text-gray-800'
-                    }`}
+                  {/* Messages */}
+                  <div
+                    className="flex flex-col-reverse flex-1 overflow-auto px-4"
+                    ref={messageContainerRef}
                   >
-                    <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub" />
-                    <span>View Source</span>
-                  </a>
-                </footer>
+                    {[...messages]
+                      .reverse()
+                      .map((m, index) => (
+                        <ChatMessageBubble
+                          key={m.id}
+                          message={{ ...m }}
+                          aiEmoji="🦜"
+                          isMostRecent={index === 0}
+                          messageCompleted={!isLoading}
+                        ></ChatMessageBubble>
+                      ))}
+                  </div>
+
+                  {/* Input */}
+                  <div className="flex-shrink-0 p-4">
+                    <div className="max-w-2xl mx-auto">
+                      <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0 ${
+                        isDarkMode 
+                          ? 'bg-transparent border-gray-600 focus-within:ring-[#305cde] focus-within:border-[#305cde]' 
+                          : 'bg-transparent border-gray-300 focus-within:ring-[#305cde] focus-within:border-[#305cde]'
+                      }`}>
+                        <div className="pr-12">
+                          <AutoResizeTextarea
+                            value={input}
+                            maxRows={5}
+                            placeholder="Please type here...."
+                            textColor={isDarkMode ? "white" : "black"}
+                            borderColor={"transparent"}
+                            backgroundColor={"transparent"}
+                            focusBorderColor="transparent"
+                            fontFamily="'Inter', sans-serif"
+                            fontSize="md"
+                            _focus={{
+                              boxShadow: "none",
+                              outline: "none",
+                            }}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={async (e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              try {
+                                await sendMessage();
+                              } catch (error) {
+                                console.error("Error in onKeyDown:", error);
+                              }
+                            } else if (e.key === "Enter" && e.shiftKey) {
+                              e.preventDefault();
+                              setInput(input + "\n");
+                            }
+                          }}
+                          />
+                        </div>
+                        <button
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            try {
+                              await sendMessage();
+                            } catch (error) {
+                              console.error("Error in onClick:", error);
+                            }
+                          }}
+                          disabled={isLoading || !isConnected}
+                          title={!isConnected ? `WebSocket ${wsStatus}` : 'Send message'}
+                          className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full w-9 h-9 flex items-center justify-center disabled:opacity-50 bg-black text-white border-2 border-black ${!isConnected ? 'border-red-500' : ''}`}
+                        >
+                          {isLoading ? <Spinner size="sm" /> : <ArrowUpIcon strokeWidth={3} />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <footer className="flex justify-center p-4">
+                    <a
+                      href="https://github.com/jari1882/friggs-gate"
+                      target="_blank"
+                      className={`flex items-center transition-colors duration-200 ${
+                        isDarkMode 
+                          ? 'text-gray-400 hover:text-gray-200' 
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub" />
+                      <span>View Source</span>
+                    </a>
+                  </footer>
+                </>
+              ) : (
+                /* Empty state - properly centered */
+                <>
+                  {/* Top spacer */}
+                  <div className="flex-1"></div>
+                  
+                  {/* Centered content group */}
+                  <div className="flex-shrink-0 px-4">
+                    {/* Main question */}
+                    <h2 className={`text-2xl font-medium text-center mb-12 transition-colors duration-200 ${
+                      isDarkMode ? 'text-white' : 'text-gray-800'
+                    }`}>
+                      What can the Life Nervous System Do for You?
+                    </h2>
+                    
+                    {/* EmptyState buttons */}
+                    <div className="flex justify-center mb-8">
+                      {showEmptyStateButtons && <EmptyState onChoice={sendInitialQuestion} />}
+                    </div>
+                    
+                    {/* Input centered below buttons */}
+                    <div className="max-w-2xl mx-auto">
+                      <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0 ${
+                        isDarkMode 
+                          ? 'bg-transparent border-gray-600 focus-within:ring-[#305cde] focus-within:border-[#305cde]' 
+                          : 'bg-transparent border-gray-300 focus-within:ring-[#305cde] focus-within:border-[#305cde]'
+                      }`}>
+                        <div className="pr-12">
+                          <AutoResizeTextarea
+                            value={input}
+                            maxRows={5}
+                            placeholder="Please type here...."
+                            textColor={isDarkMode ? "white" : "black"}
+                            borderColor={"transparent"}
+                            backgroundColor={"transparent"}
+                            focusBorderColor="transparent"
+                            fontFamily="'Inter', sans-serif"
+                            fontSize="md"
+                            _focus={{
+                              boxShadow: "none",
+                              outline: "none",
+                            }}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={async (e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              try {
+                                await sendMessage();
+                              } catch (error) {
+                                console.error("Error in onKeyDown:", error);
+                              }
+                            } else if (e.key === "Enter" && e.shiftKey) {
+                              e.preventDefault();
+                              setInput(input + "\n");
+                            }
+                          }}
+                          />
+                        </div>
+                        <button
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            try {
+                              await sendMessage();
+                            } catch (error) {
+                              console.error("Error in onClick:", error);
+                            }
+                          }}
+                          disabled={isLoading || !isConnected}
+                          title={!isConnected ? `WebSocket ${wsStatus}` : 'Send message'}
+                          className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full w-9 h-9 flex items-center justify-center disabled:opacity-50 bg-black text-white border-2 border-black ${!isConnected ? 'border-red-500' : ''}`}
+                        >
+                          {isLoading ? <Spinner size="sm" /> : <ArrowUpIcon strokeWidth={3} />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Bottom spacer */}
+                  <div className="flex-1"></div>
+                  
+                  {/* Footer */}
+                  <footer className="flex-shrink-0 flex justify-center p-4">
+                    <a
+                      href="https://github.com/jari1882/friggs-gate"
+                      target="_blank"
+                      className={`flex items-center transition-colors duration-200 ${
+                        isDarkMode 
+                          ? 'text-gray-400 hover:text-gray-200' 
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub" />
+                      <span>View Source</span>
+                    </a>
+                  </footer>
+                </>
               )}
             </>
           ) : (
