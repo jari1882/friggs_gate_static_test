@@ -34,28 +34,17 @@ const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
   
   if (isMinimized) {
     return (
-      <div className="w-full">
-        <div className={`border rounded-lg p-3 transition-colors duration-200 relative ${
-          isDarkMode 
-            ? 'border-gray-600 bg-gray-800' 
-            : 'border-gray-300 bg-white'
-        }`}>
-          <div className="flex items-center justify-between">
-            <span className={`text-sm font-medium transition-colors duration-200 ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-600'
-            }`}>
-              Memory ({memories.length} items)
-            </span>
-            <button 
-              onClick={() => setIsMinimized(false)}
-              className={`p-1 rounded transition-colors duration-200 ${
-                isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
-              }`}
-            >
-              <ViewIcon className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      <div className="absolute right-7 top-14 z-10">
+        <button 
+          onClick={() => setIsMinimized(false)}
+          className={`p-2 rounded-full transition-colors duration-200 ${
+            isDarkMode 
+              ? 'bg-gray-800 hover:bg-gray-700 text-gray-400 border border-gray-600' 
+              : 'bg-white hover:bg-gray-100 text-gray-500 border border-gray-300'
+          }`}
+        >
+          <ViewIcon className="w-5 h-5" />
+        </button>
       </div>
     );
   }
@@ -89,8 +78,8 @@ const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
               onClick={() => onSelect(memory)}
               className={`flex-shrink-0 border rounded-lg px-6 py-4 text-base font-medium transition-colors whitespace-nowrap ${
                 isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600 hover:border-gray-500' 
-                  : 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300'
+                  ? 'bg-white border-gray-600 text-gray-200 hover:bg-gray-100 hover:border-gray-500' 
+                  : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

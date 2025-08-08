@@ -60,7 +60,11 @@ export const useFriggState = create<FriggState>((set) => ({
   setFont: (font) => set({ selectedFont: font }),
   
   // Initial memory state
-  memories: ['Conversation 1 - 10/31', 'Conversation 2 - Today', 'Conversation 3 - 10/29', 'Conversation 4 - 10/28', 'Conversation 5 - 10/27'],
+  memories: [
+    'Not Active', 'Not Active', 'Not Active', 'Not Active', 'Not Active',
+    'Not Active', 'Not Active', 'Not Active', 'Not Active', 'Not Active',
+    'Not Active', 'Not Active', 'Not Active', 'Not Active', 'Not Active'
+  ],
   selectedMemory: null,
   
   // Memory actions
