@@ -5,7 +5,7 @@ import { Montserrat } from "next/font/google";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Frigg's Gate",
+  title: "Life Nervous System",
   description: "Central interface to the Life Nervous System cognitive architecture",
   icons: {
     icon: "/brain-favicon.ico",
