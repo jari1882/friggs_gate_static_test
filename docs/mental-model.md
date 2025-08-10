@@ -280,6 +280,40 @@ const actions = {
 
 ---
 
+## 🌐 WebSocket Communication Mental Model
+
+### The Communication Hub: `app/hooks/useWebSocket.ts`
+**Think of this as**: A smart phone system that automatically reconnects when calls drop
+- **Pattern**: Always goes through this hook, never create direct WebSocket connections
+- **Behavior**: Auto-connects, auto-reconnects (5 attempts, 3-second delays)
+- **Mental model**: Treat it like a resilient communication channel, not a fragile connection
+
+### Information Flow Patterns
+
+Think of the system as having **5 distinct information radio frequencies**:
+
+**🟡 Frequency 1: User Input Events** (`ChatWindow.tsx` → WebSocket)
+- What travels: Chat messages, button clicks, form submissions
+- Mental pattern: "What did the user just do?"
+
+**🟢 Frequency 2: Context Snapshots** (`ChatWindow.tsx` → WebSocket)
+- What travels: Where the user is in the interface, what's currently selected
+- Mental pattern: "Where is the user right now in their journey?"
+
+**🧠 Frequency 3: Intelligence Stream** (WebSocket → `ResponseInterpreter` → UI)
+- What travels: AI responses, UI control instructions, panel activation signals
+- Mental pattern: "What should the interface do based on the AI's understanding?"
+
+**📟 Frequency 4: Connection Status** (`useWebSocket.ts` → UI Components)
+- What travels: Connected/disconnected states, error conditions
+- Mental pattern: "Is the communication channel healthy?"
+
+**📊 Frequency 5: State Synchronization** (Stores → Components)
+- What travels: UI state changes, preference updates
+- Mental pattern: "What UI elements need to update based on state changes?"
+
+---
+
 ## 🔄 Backend Integration Editing Guide
 
 ### 🧠 responseInterpreter.ts - Intelligence Bridge
@@ -552,6 +586,32 @@ When editing components, you're working across four distinct JavaScript layers:
 1. **globals.css**: For app-wide changes (fonts, colors, base elements)
 2. **Component files**: Add/modify Tailwind classes in className attributes
 3. **tailwind.config.ts**: For custom design tokens (if needed)
+
+---
+
+## 🔄 Change Impact Thinking
+
+When making changes, think through these **ripple effects**:
+
+### WebSocket Changes
+- **Primary impact**: `useWebSocket.ts`
+- **Secondary impact**: `ChatWindow.tsx` (message handling)
+- **Tertiary impact**: Error handling throughout UI
+
+### State Changes  
+- **Persistent state**: Check what needs localStorage persistence
+- **Session state**: Consider what resets between conversations
+- **Cross-component**: Verify all components using the state update correctly
+
+### Panel Changes
+- **Layout impact**: How does this affect responsive behavior?
+- **Content impact**: What gets displayed in the panel?
+- **Coordination impact**: How do other panels need to react?
+
+### Intelligence Changes
+- **Pattern impact**: What new backend signals need detection?
+- **UI impact**: What interface changes should result?
+- **State impact**: What workspace coordination changes?
 
 ---
 

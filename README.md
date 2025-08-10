@@ -112,27 +112,62 @@ FRIGGS-GATE/ (LNS Frontend)
 
 ---
 
-## 8. 🌐 Backend Integration
+## 8. 🔌 WebSocket Integration
 
-**API Endpoint**: `POST http://localhost:8000/ask/invoke`
+**Endpoint**: `ws://localhost:8001/ws` (env: `NEXT_PUBLIC_WS_BASE_URL`)
 
-**Payload Structure**:
-```json
+**Message Format**:
+```typescript
 {
-  "input": {
-    "version": "1.0", 
-    "question": "user question",
-    "chat_history": [],
-    "metadata": { "caller": "frontend_app" }
-  }
+  question: string,
+  chat_history: Array<{human: string, ai: string}>,
+  metadata: { caller: "frontend_app", purpose: "chat_request", timestamp: ISO },
+  session: { user_id: string, context: { conversation_id: UUID, llm: string }},
+  stream: boolean
 }
 ```
+
+**Response Format**:
+```typescript
+{
+  status: 'success' | 'error',
+  output?: { answer: string, run_id?: string, agent?: string },
+  message?: string
+}
+```
+
+**Connection**: Auto-connect, auto-reconnect (5 attempts, 3s delay)
 
 **Intelligence Bridge**: `responseInterpreter.ts` translates backend responses into UI actions and workspace coordination.
 
 ---
 
-## 9. 🔧 Development Commands
+## 9. 🧠 State Architecture
+
+```
+useFriggState.ts (Persistent - localStorage)     useWorkspaceCoordinator.ts (Session - memory)
+├── Panel widths/positions                        ├── Current tool selection
+├── Theme settings                                ├── Panel visibility  
+└── User preferences                              └── Dynamic content
+```
+
+**Flow**: User Action → Store Update → Component Re-render → WebSocket Response → ResponseInterpreter → UI Update
+
+---
+
+## 10. ⚠️ Development Constraints
+
+- **WebSocket only** - no REST API calls
+- **ChatWindow orchestrates** - don't bypass
+- **useWebSocket hook** - don't create direct connections  
+- **Tailwind styling** - no separate CSS files
+- **TypeScript strict mode** - required
+- **DOMPurify** - required for user content
+- **Two-store state** - persistent vs session separation
+
+---
+
+## 11. 🔧 Development Commands
 
 | Command | Purpose |
 |---------|---------|
