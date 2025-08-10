@@ -37,13 +37,25 @@ const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
       <div className="absolute right-7 top-14 z-10">
         <button 
           onClick={() => setIsMinimized(false)}
-          className={`p-2 rounded-full transition-colors duration-200 ${
+          className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 mt-1 relative group ${
             isDarkMode 
               ? 'bg-gray-800 hover:bg-gray-700 text-gray-400 border border-gray-600' 
               : 'bg-white hover:bg-gray-100 text-gray-500 border border-gray-300'
           }`}
         >
-          <ViewIcon className="w-5 h-5" />
+          <ViewIcon className="w-4 h-4" />
+          {/* Custom tooltip positioned to the left */}
+          <div className={`absolute bottom-full right-0 mb-2 px-2 py-1 text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap ${
+            isDarkMode 
+              ? 'bg-gray-700 text-white border border-gray-600' 
+              : 'bg-gray-100 text-gray-800 border border-gray-300'
+          }`}>
+            Show Memory Slider
+            {/* Tooltip arrow positioned to the right */}
+            <div className={`absolute top-full right-2 border-4 border-transparent ${
+              isDarkMode ? 'border-t-gray-700' : 'border-t-gray-100'
+            }`}></div>
+          </div>
         </button>
       </div>
     );
