@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Life Nervous System",
   description: "Central interface to the Life Nervous System cognitive architecture",
   icons: {
-    icon: "/brain-favicon.ico",
+    icon: "/brain-favicon.png",
   },
 };
 

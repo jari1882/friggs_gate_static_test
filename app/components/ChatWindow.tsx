@@ -287,9 +287,16 @@ export function ChatWindow(props: { conversationId: string }) {
           : 'bg-white border-gray-200'
       }`}>
         <div className="flex items-center justify-between mb-6">
-          <h1 className={`text-2xl font-medium transition-colors duration-200 ${
-            isDarkMode ? 'text-white' : 'text-gray-800'
-          }`} style={{ fontFamily: "Roboto" }}>Frigg&apos;s Gate</h1>
+          <div className="flex items-center">
+            <h1 className={`text-2xl font-medium transition-colors duration-200 ${
+              isDarkMode ? 'text-white' : 'text-gray-800'
+            }`} style={{ fontFamily: "Roboto" }}>Frigg&apos;s Gate</h1>
+            <img 
+              src="/lns-logo.png" 
+              alt="Life Nervous System Logo" 
+              className="w-12 h-12 ml-1"
+            />
+          </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
           </div>
