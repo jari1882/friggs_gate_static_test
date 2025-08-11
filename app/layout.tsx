@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   title: "Life Nervous System",
   description: "Central interface to the Life Nervous System cognitive architecture",
   icons: {
-    icon: "/brain-favicon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/favicon-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
 };
 

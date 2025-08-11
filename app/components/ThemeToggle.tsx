@@ -11,7 +11,7 @@ const ThemeToggle: React.FC = () => {
   return (
     <motion.button
       onClick={toggleTheme}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 group ${
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none group ${
         isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
       }`}
       whileTap={{ scale: 0.95 }}

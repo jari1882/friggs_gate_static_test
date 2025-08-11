@@ -294,7 +294,7 @@ export function ChatWindow(props: { conversationId: string }) {
             <img 
               src="/lns-logo.png" 
               alt="Life Nervous System Logo" 
-              className="w-12 h-12 ml-1"
+              className="w-12 h-12 ml-3"
             />
           </div>
           <div className="flex items-center gap-3">
