@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ViewOffIcon, ViewIcon } from '@chakra-ui/icons';
 import { useFriggState } from '../hooks/useFriggState';
+import { colors, scrollbarColors } from '../config/theme';
+import { content } from '../config/content';
 
 interface MemorySliderProps {
   memories: string[];
@@ -13,16 +15,18 @@ interface MemorySliderProps {
 const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
   const { isDarkMode } = useFriggState();
   const [isMinimized, setIsMinimized] = useState(true);
+  const themeColors = isDarkMode ? colors.dark : colors.light;
+  const scrollbar = isDarkMode ? scrollbarColors.dark : scrollbarColors.light;
   
   // Add dynamic CSS for dark mode scrollbar
   React.useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
       .memory-slider-scrollbar::-webkit-scrollbar-thumb {
-        background: ${isDarkMode ? '#4B5563' : '#D1D5DB'};
+        background: ${scrollbar.track};
       }
       .memory-slider-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: ${isDarkMode ? '#6B7280' : '#9CA3AF'};
+        background: ${scrollbar.thumb};
       }
     `;
     document.head.appendChild(style);
@@ -77,7 +81,7 @@ const MemorySlider: React.FC<MemorySliderProps> = ({ memories, onSelect }) => {
           className="flex gap-4 overflow-x-auto pb-6 memory-slider-scrollbar pr-12" 
           style={{
             scrollbarWidth: 'thin',
-            scrollbarColor: isDarkMode ? '#4B5563 #1F2937' : '#D1D5DB #F9FAFB'
+            scrollbarColor: scrollbar.scrollbarColor
           }}
         >
           {memories.map((memory, index) => (

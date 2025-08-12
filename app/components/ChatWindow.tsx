@@ -16,6 +16,9 @@ import { marked } from "marked";
 import { Renderer } from "marked";
 import hljs from "highlight.js";
 import "highlight.js/styles/gradient-dark.css";
+import { colors, codeHighlight } from "../config/theme";
+import { content } from "../config/content";
+import { fontFamilies } from "../config/fonts";
 
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -54,6 +57,9 @@ export function ChatWindow(props: { conversationId: string }) {
     setStructuredOutputDockWidth,
     selectMemory
   } = useFriggState();
+
+  // Theme colors
+  const themeColors = isDarkMode ? colors.dark : colors.light;
 
   // Workspace coordinator - handles agent-driven panel behavior
   const {
@@ -144,7 +150,7 @@ export function ChatWindow(props: { conversationId: string }) {
         ...prevMessages,
         { 
           id: Math.random().toString(), 
-          content: `Sorry, there was a WebSocket error: WebSocket is not connected. Please try again.`, 
+          content: content.errors.websocketNotConnected, 
           role: "assistant" 
         },
       ]);
@@ -186,7 +192,7 @@ export function ChatWindow(props: { conversationId: string }) {
         code,
         { language: validLanguage || "plaintext" },
       ).value;
-      return `<pre class="highlight bg-gray-700" style="padding: 5px; border-radius: 5px; overflow: auto; overflow-wrap: anywhere; white-space: pre-wrap; max-width: 100%; display: block; line-height: 1.2"><code class="${language}" style="color: #d6e2ef; font-size: 12px; ">${highlightedCode}</code></pre>`;
+      return `<pre class="highlight bg-gray-700" style="padding: 5px; border-radius: 5px; overflow: auto; overflow-wrap: anywhere; white-space: pre-wrap; max-width: 100%; display: block; line-height: 1.2"><code class="${language}" style="color: ${codeHighlight.text}; font-size: 12px; ">${highlightedCode}</code></pre>`;
     };
     marked.setOptions({ renderer });
 
@@ -195,8 +201,8 @@ export function ChatWindow(props: { conversationId: string }) {
       question: messageValue,
       chat_history: chatHistory,
       metadata: {
-        caller: "frontend_app",
-        purpose: "chat_request",
+        caller: content.metadata.caller,
+        purpose: content.metadata.purpose,
         timestamp: new Date().toISOString(),
       },
       session: {
@@ -214,7 +220,7 @@ export function ChatWindow(props: { conversationId: string }) {
       webSocketMessage,
       (response) => {
         // Success handler
-        const answer = response.output?.answer || "No response received";
+        const answer = response.output?.answer || content.errors.noResponse;
         runId = response.output?.run_id || Math.random().toString();
         
         // Process backend response if needed
@@ -256,7 +262,7 @@ export function ChatWindow(props: { conversationId: string }) {
           ...prevMessages,
           { 
             id: Math.random().toString(), 
-            content: `Sorry, there was a WebSocket error: ${error}. Please try again.`, 
+            content: content.errors.generalWebsocketError.replace('{error}', error), 
             role: "assistant" 
           },
         ]);
@@ -277,20 +283,21 @@ export function ChatWindow(props: { conversationId: string }) {
 
 
   return (
-    <div className={`flex flex-col h-screen transition-colors duration-200 ${
-      isDarkMode ? 'bg-gray-900' : 'bg-white'
-    }`}>
+    <div className={`flex flex-col h-screen transition-colors duration-200`}
+      style={{ backgroundColor: themeColors.background }}>
       {/* Header with memory slider */}
-      <div className={`flex-shrink-0 p-6 border-b transition-colors duration-200 ${
-        isDarkMode 
-          ? 'bg-gray-800 border-gray-700' 
-          : 'bg-white border-gray-200'
-      }`}>
+      <div className={`flex-shrink-0 p-6 border-b transition-colors duration-200`}
+        style={{ 
+          backgroundColor: isDarkMode ? themeColors.chakra.gray[800] : themeColors.background,
+          borderColor: isDarkMode ? themeColors.chakra.gray[700] : themeColors.chakra.gray[200]
+        }}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <h1 className={`text-2xl font-medium transition-colors duration-200 ${
-              isDarkMode ? 'text-white' : 'text-gray-800'
-            }`} style={{ fontFamily: "Roboto" }}>Frigg&apos;s Gate</h1>
+            <h1 className={`text-2xl font-medium transition-colors duration-200`}
+              style={{ 
+                color: themeColors.text,
+                fontFamily: fontFamilies.roboto 
+              }}>{content.app.appName}</h1>
             <img 
               src="/lns-logo.png" 
               alt="Life Nervous System Logo" 
@@ -324,9 +331,8 @@ export function ChatWindow(props: { conversationId: string }) {
         {/* Main Chat Area */}
         <div 
           ref={mainChatRef}
-          className={`flex-1 flex flex-col min-w-0 transition-colors duration-200 ${
-            isDarkMode ? 'bg-gray-900' : 'bg-white'
-          }`}
+          className={`flex-1 flex flex-col min-w-0 transition-colors duration-200`}
+          style={{ backgroundColor: themeColors.background }}
         >
           {mainChatWidth > 200 ? (
             <>
@@ -334,10 +340,9 @@ export function ChatWindow(props: { conversationId: string }) {
                 <>
                   {/* Main question */}
                   <div className="flex-shrink-0 p-6">
-                    <h2 className={`text-2xl font-medium text-center mb-6 transition-colors duration-200 ${
-                      isDarkMode ? 'text-white' : 'text-gray-800'
-                    }`}>
-                      What can the Life Nervous System Do for You?
+                    <h2 className={`text-2xl font-medium text-center mb-6 transition-colors duration-200`}
+                      style={{ color: themeColors.text }}>
+                      {content.app.mainQuestion}
                     </h2>
                   </div>
 
@@ -362,17 +367,17 @@ export function ChatWindow(props: { conversationId: string }) {
                   {/* Input */}
                   <div className="flex-shrink-0 p-4">
                     <div className="max-w-2xl mx-auto">
-                      <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0 ${
-                        isDarkMode 
-                          ? 'bg-transparent border-gray-600 focus-within:ring-[#305cde] focus-within:border-[#305cde]' 
-                          : 'bg-transparent border-gray-300 focus-within:ring-[#305cde] focus-within:border-[#305cde]'
-                      }`}>
+                      <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0`}
+                        style={{
+                          backgroundColor: 'transparent',
+                          borderColor: isDarkMode ? themeColors.chakra.gray[600] : themeColors.chakra.gray[300]
+                        }}>
                         <div className="pr-12">
                           <AutoResizeTextarea
                             value={input}
                             maxRows={5}
-                            placeholder="Please type here...."
-                            textColor={isDarkMode ? "white" : "black"}
+                            placeholder={content.placeholders.chatInput}
+                            textColor={themeColors.text}
                             borderColor={"transparent"}
                             backgroundColor={"transparent"}
                             focusBorderColor="transparent"
@@ -408,7 +413,7 @@ export function ChatWindow(props: { conversationId: string }) {
                             }
                           }}
                           disabled={isLoading || !isConnected}
-                          title={!isConnected ? `WebSocket ${wsStatus}` : 'Send message'}
+                          title={!isConnected ? `${content.tooltips.websocketError} ${wsStatus}` : content.buttons.send}
                           className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full w-9 h-9 flex items-center justify-center disabled:opacity-50 bg-black text-white border-2 border-black ${!isConnected ? 'border-red-500' : ''}`}
                         >
                           {isLoading ? <Spinner size="sm" /> : <ArrowUpIcon strokeWidth={3} />}
@@ -420,16 +425,21 @@ export function ChatWindow(props: { conversationId: string }) {
                   {/* Footer */}
                   <footer className="flex justify-center p-4">
                     <a
-                      href="https://github.com/jari1882/friggs-gate"
+                      href={content.navigation.githubLink}
                       target="_blank"
-                      className={`flex items-center transition-colors duration-200 ${
-                        isDarkMode 
-                          ? 'text-gray-400 hover:text-gray-200' 
-                          : 'text-gray-600 hover:text-gray-800'
-                      }`}
+                      className={`flex items-center transition-colors duration-200`}
+                      style={{
+                        color: isDarkMode ? themeColors.chakra.gray[400] : themeColors.chakra.gray[600]
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = isDarkMode ? themeColors.chakra.gray[200] : themeColors.chakra.gray[800];
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = isDarkMode ? themeColors.chakra.gray[400] : themeColors.chakra.gray[600];
+                      }}
                     >
                       <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub" />
-                      <span>View Source</span>
+                      <span>{content.buttons.viewSource}</span>
                     </a>
                   </footer>
                 </>
@@ -442,10 +452,9 @@ export function ChatWindow(props: { conversationId: string }) {
                   {/* Centered content group */}
                   <div className="flex-shrink-0 px-4">
                     {/* Main question */}
-                    <h2 className={`text-2xl font-medium text-center mb-12 transition-colors duration-200 ${
-                      isDarkMode ? 'text-white' : 'text-gray-800'
-                    }`}>
-                      What can the Life Nervous System Do for You?
+                    <h2 className={`text-2xl font-medium text-center mb-12 transition-colors duration-200`}
+                      style={{ color: themeColors.text }}>
+                      {content.app.mainQuestion}
                     </h2>
                     
                     {/* EmptyState buttons */}
@@ -455,17 +464,17 @@ export function ChatWindow(props: { conversationId: string }) {
                     
                     {/* Input centered below buttons */}
                     <div className="max-w-2xl mx-auto">
-                      <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0 ${
-                        isDarkMode 
-                          ? 'bg-transparent border-gray-600 focus-within:ring-[#305cde] focus-within:border-[#305cde]' 
-                          : 'bg-transparent border-gray-300 focus-within:ring-[#305cde] focus-within:border-[#305cde]'
-                      }`}>
+                      <div className={`relative rounded-3xl border p-4 transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-0`}
+                        style={{
+                          backgroundColor: 'transparent',
+                          borderColor: isDarkMode ? themeColors.chakra.gray[600] : themeColors.chakra.gray[300]
+                        }}>
                         <div className="pr-12">
                           <AutoResizeTextarea
                             value={input}
                             maxRows={5}
-                            placeholder="Please type here...."
-                            textColor={isDarkMode ? "white" : "black"}
+                            placeholder={content.placeholders.chatInput}
+                            textColor={themeColors.text}
                             borderColor={"transparent"}
                             backgroundColor={"transparent"}
                             focusBorderColor="transparent"
@@ -501,7 +510,7 @@ export function ChatWindow(props: { conversationId: string }) {
                             }
                           }}
                           disabled={isLoading || !isConnected}
-                          title={!isConnected ? `WebSocket ${wsStatus}` : 'Send message'}
+                          title={!isConnected ? `${content.tooltips.websocketError} ${wsStatus}` : content.buttons.send}
                           className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full w-9 h-9 flex items-center justify-center disabled:opacity-50 bg-black text-white border-2 border-black ${!isConnected ? 'border-red-500' : ''}`}
                         >
                           {isLoading ? <Spinner size="sm" /> : <ArrowUpIcon strokeWidth={3} />}
@@ -516,16 +525,21 @@ export function ChatWindow(props: { conversationId: string }) {
                   {/* Footer */}
                   <footer className="flex-shrink-0 flex justify-center p-4">
                     <a
-                      href="https://github.com/jari1882/friggs-gate"
+                      href={content.navigation.githubLink}
                       target="_blank"
-                      className={`flex items-center transition-colors duration-200 ${
-                        isDarkMode 
-                          ? 'text-gray-400 hover:text-gray-200' 
-                          : 'text-gray-600 hover:text-gray-800'
-                      }`}
+                      className={`flex items-center transition-colors duration-200`}
+                      style={{
+                        color: isDarkMode ? themeColors.chakra.gray[400] : themeColors.chakra.gray[600]
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = isDarkMode ? themeColors.chakra.gray[200] : themeColors.chakra.gray[800];
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = isDarkMode ? themeColors.chakra.gray[400] : themeColors.chakra.gray[600];
+                      }}
                     >
                       <img src="/images/github-mark.svg" className="h-4 mr-1" alt="GitHub" />
-                      <span>View Source</span>
+                      <span>{content.buttons.viewSource}</span>
                     </a>
                   </footer>
                 </>
@@ -534,12 +548,11 @@ export function ChatWindow(props: { conversationId: string }) {
           ) : (
             /* Drag indicator when too narrow */
             <div className="flex-1 flex items-center justify-center">
-              <div className={`text-center select-none transition-colors duration-200 ${
-                isDarkMode ? 'text-gray-500' : 'text-gray-400'
-              }`}>
+              <div className={`text-center select-none transition-colors duration-200`}
+                style={{ color: isDarkMode ? themeColors.chakra.gray[500] : themeColors.chakra.gray[400] }}>
                 <div className="flex items-center gap-2 text-sm">
                   <span>←</span>
-                  <span>Drag to Display</span>
+                  <span>{content.labels.dragToDisplay}</span>
                   <span>→</span>
                 </div>
               </div>

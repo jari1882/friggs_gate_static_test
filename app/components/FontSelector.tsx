@@ -2,24 +2,12 @@
 
 import { Select } from '@chakra-ui/react';
 import { useFriggState } from '../hooks/useFriggState';
-
-const fontOptions = [
-  { value: 'inter', label: 'Inter (Default)', family: 'Inter, sans-serif' },
-  { value: 'roboto', label: 'Roboto', family: 'Roboto, sans-serif' },
-  { value: 'open-sans', label: 'Open Sans', family: 'Open Sans, sans-serif' },
-  { value: 'lato', label: 'Lato', family: 'Lato, sans-serif' },
-  { value: 'poppins', label: 'Poppins', family: 'Poppins, sans-serif' },
-  { value: 'montserrat', label: 'Montserrat', family: 'Montserrat, sans-serif' },
-  { value: 'source-sans', label: 'Source Sans Pro', family: 'Source Sans Pro, sans-serif' },
-  { value: 'ubuntu', label: 'Ubuntu', family: 'Ubuntu, sans-serif' },
-  { value: 'nunito', label: 'Nunito', family: 'Nunito, sans-serif' },
-  { value: 'system', label: 'System Default', family: '-apple-system, BlinkMacSystemFont, system-ui, sans-serif' },
-  { value: 'fira-code', label: 'Fira Code (Mono)', family: 'Fira Code, Consolas, Monaco, monospace' },
-  { value: 'jetbrains-mono', label: 'JetBrains Mono', family: 'JetBrains Mono, Consolas, Monaco, monospace' }
-];
+import { fontOptions } from '../config/fonts';
+import { colors } from '../config/theme';
 
 export default function FontSelector() {
   const { selectedFont, setFont, isDarkMode } = useFriggState();
+  const themeColors = isDarkMode ? colors.dark : colors.light;
 
   const handleFontChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newFont = event.target.value;
@@ -38,15 +26,15 @@ export default function FontSelector() {
       onChange={handleFontChange}
       size="sm"
       width="180px"
-      bg={isDarkMode ? 'gray.700' : 'white'}
-      color={isDarkMode ? 'white' : 'gray.800'}
-      borderColor={isDarkMode ? 'gray.600' : 'gray.300'}
+      bg={isDarkMode ? themeColors.chakra.gray[700] : themeColors.chakra.white}
+      color={isDarkMode ? themeColors.chakra.white : themeColors.chakra.gray[800]}
+      borderColor={isDarkMode ? themeColors.chakra.gray[600] : themeColors.chakra.gray[300]}
       _hover={{
-        borderColor: isDarkMode ? 'gray.500' : 'gray.400'
+        borderColor: isDarkMode ? themeColors.chakra.gray[500] : themeColors.chakra.gray[400]
       }}
       _focus={{
-        borderColor: 'blue.500',
-        boxShadow: '0 0 0 1px rgba(66, 153, 225, 0.6)'
+        borderColor: themeColors.primary,
+        boxShadow: `0 0 0 1px ${themeColors.primary}99`
       }}
     >
       {fontOptions.map((font) => (
@@ -54,8 +42,8 @@ export default function FontSelector() {
           key={font.value} 
           value={font.value}
           style={{ 
-            backgroundColor: isDarkMode ? '#2D3748' : '#FFFFFF',
-            color: isDarkMode ? '#FFFFFF' : '#1A202C'
+            backgroundColor: isDarkMode ? themeColors.chakra.gray[700] : themeColors.chakra.white,
+            color: isDarkMode ? themeColors.chakra.white : themeColors.chakra.gray[800]
           }}
         >
           {font.label}

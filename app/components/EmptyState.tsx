@@ -8,9 +8,12 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { useFriggState } from '../hooks/useFriggState';
+import { colors } from '../config/theme';
+import { content } from '../config/content';
 
 export function EmptyState(props: { onChoice: (question: string) => any }) {
   const { isDarkMode } = useFriggState();
+  const themeColors = isDarkMode ? colors.dark : colors.light;
   
   const handleClick = (e: MouseEvent) => {
     const text = (e.target as HTMLDivElement).innerText;
@@ -23,10 +26,11 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          height={"80px"}
+          backgroundColor={isDarkMode ? themeColors.chakra.gray[800] : themeColors.chakra.white}
           border={"1px solid"}
-          borderColor={isDarkMode ? "gray.600" : "gray.300"}
-          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
+          borderColor={isDarkMode ? themeColors.chakra.gray[600] : themeColors.chakra.gray[300]}
+          _hover={{ backgroundColor: isDarkMode ? themeColors.chakra.gray[700] : themeColors.chakra.gray[50] }}
           cursor={"pointer"}
           justifyContent={"center"}
           rounded={"lg"}
@@ -36,10 +40,10 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={isDarkMode ? "gray.200" : "gray.700"}
+              color={isDarkMode ? themeColors.chakra.gray[200] : themeColors.chakra.gray[700]}
               textAlign={"center"}
             >
-              Run an illustration
+              {content.buttons.promptButtons[0]}
             </Heading>
           </CardHeader>
         </Card>
@@ -47,10 +51,11 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          height={"80px"}
+          backgroundColor={isDarkMode ? themeColors.chakra.gray[800] : themeColors.chakra.white}
           border={"1px solid"}
-          borderColor={isDarkMode ? "gray.600" : "gray.300"}
-          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
+          borderColor={isDarkMode ? themeColors.chakra.gray[600] : themeColors.chakra.gray[300]}
+          _hover={{ backgroundColor: isDarkMode ? themeColors.chakra.gray[700] : themeColors.chakra.gray[50] }}
           cursor={"pointer"}
           justifyContent={"center"}
           rounded={"lg"}
@@ -60,10 +65,10 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={isDarkMode ? "gray.200" : "gray.700"}
+              color={isDarkMode ? themeColors.chakra.gray[200] : themeColors.chakra.gray[700]}
               textAlign={"center"}
             >
-              Get a quick quote
+              {content.buttons.promptButtons[1]}
             </Heading>
           </CardHeader>
         </Card>
@@ -72,10 +77,11 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          height={"80px"}
+          backgroundColor={isDarkMode ? themeColors.chakra.gray[800] : themeColors.chakra.white}
           border={"1px solid"}
-          borderColor={isDarkMode ? "gray.600" : "gray.300"}
-          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
+          borderColor={isDarkMode ? themeColors.chakra.gray[600] : themeColors.chakra.gray[300]}
+          _hover={{ backgroundColor: isDarkMode ? themeColors.chakra.gray[700] : themeColors.chakra.gray[50] }}
           cursor={"pointer"}
           justifyContent={"center"}
           rounded={"lg"}
@@ -85,10 +91,10 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={isDarkMode ? "gray.200" : "gray.700"}
+              color={isDarkMode ? themeColors.chakra.gray[200] : themeColors.chakra.gray[700]}
               textAlign={"center"}
             >
-              Experience SIM-KB
+              {content.buttons.promptButtons[2]}
             </Heading>
           </CardHeader>
         </Card>
@@ -96,10 +102,11 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         <Card
           onMouseUp={handleClick}
           width={"48%"}
-          backgroundColor={isDarkMode ? "gray.800" : "white"}
+          height={"80px"}
+          backgroundColor={isDarkMode ? themeColors.chakra.gray[800] : themeColors.chakra.white}
           border={"1px solid"}
-          borderColor={isDarkMode ? "gray.600" : "gray.300"}
-          _hover={{ backgroundColor: isDarkMode ? "gray.700" : "gray.50" }}
+          borderColor={isDarkMode ? themeColors.chakra.gray[600] : themeColors.chakra.gray[300]}
+          _hover={{ backgroundColor: isDarkMode ? themeColors.chakra.gray[700] : themeColors.chakra.gray[50] }}
           cursor={"pointer"}
           justifyContent={"center"}
           rounded={"lg"}
@@ -109,10 +116,10 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
               fontSize="lg"
               fontWeight={"medium"}
               mb={1}
-              color={isDarkMode ? "gray.200" : "gray.700"}
+              color={isDarkMode ? themeColors.chakra.gray[200] : themeColors.chakra.gray[700]}
               textAlign={"center"}
             >
-              About Frigg and the life nervous system
+              {content.buttons.promptButtons[3]}
             </Heading>
           </CardHeader>
         </Card>

@@ -1,6 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
+import { content } from '../config/content';
 
 interface FriggState {
   // Layout state
@@ -60,11 +61,7 @@ export const useFriggState = create<FriggState>((set) => ({
   setFont: (font) => set({ selectedFont: font }),
   
   // Initial memory state
-  memories: [
-    'Not Active', 'Not Active', 'Not Active', 'Not Active', 'Not Active',
-    'Not Active', 'Not Active', 'Not Active', 'Not Active', 'Not Active',
-    'Not Active', 'Not Active', 'Not Active', 'Not Active', 'Not Active'
-  ],
+  memories: Array(15).fill(content.labels.notActive),
   selectedMemory: null,
   
   // Memory actions

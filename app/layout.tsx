@@ -1,11 +1,12 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+import { content } from "./config/content";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Life Nervous System",
+  title: content.app.title,
   description: "Central interface to the Life Nervous System cognitive architecture",
   icons: {
     icon: [
