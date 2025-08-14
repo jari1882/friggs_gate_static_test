@@ -383,6 +383,9 @@ export function ChatWindow(props: { conversationId: string }) {
                             focusBorderColor="transparent"
                             fontFamily="'Inter', sans-serif"
                             fontSize="md"
+                            _placeholder={{
+                              fontSize: content.styles.placeholderFontSize
+                            }}
                             _focus={{
                               boxShadow: "none",
                               outline: "none",
@@ -480,6 +483,9 @@ export function ChatWindow(props: { conversationId: string }) {
                             focusBorderColor="transparent"
                             fontFamily="'Inter', sans-serif"
                             fontSize="md"
+                            _placeholder={{
+                              fontSize: content.styles.placeholderFontSize
+                            }}
                             _focus={{
                               boxShadow: "none",
                               outline: "none",

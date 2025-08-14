@@ -7,19 +7,23 @@ export const content = {
   
   buttons: {
     promptButtons: [
-      "Run an illustration",
-      "Get a quick quote", 
-      "Experience SIM-KB",
-      "About Us"
+      "Written Musings & LPM",
+      "Submit a Quick Quote", 
+      "Who is LNS?",
+      "Who is Frigg?"
     ],
     send: "Send message",
     viewSource: "View Source"
   },
   
   placeholders: {
-    chatInput: "Please type here....",
+    chatInput: "Remember, you can type /help at any time...",
     searchInput: "Search...",
     textInput: "Enter text..."
+  },
+
+  styles: {
+    placeholderFontSize: "md"
   },
   
   tooltips: {
