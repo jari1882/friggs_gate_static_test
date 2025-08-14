@@ -19,6 +19,7 @@ import "highlight.js/styles/gradient-dark.css";
 import { colors, codeHighlight } from "../config/theme";
 import { content } from "../config/content";
 import { fontFamilies } from "../config/fonts";
+import { commands } from "../config/commands";
 
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -156,8 +157,13 @@ export function ChatWindow(props: { conversationId: string }) {
       ]);
       return;
     }
-    const messageValue = message ?? input;
+    let messageValue = message ?? input;
     if (messageValue === "") return;
+    
+    // Check for command aliases
+    if (messageValue in commands.aliases) {
+      messageValue = commands.aliases[messageValue as keyof typeof commands.aliases];
+    }
     
     // Hide empty state buttons when user sends a message
     hideEmptyStateButtons();
