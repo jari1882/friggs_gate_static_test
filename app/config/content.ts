@@ -53,8 +53,4 @@ export const content = {
     noResponse: "No response received"
   },
   
-  metadata: {
-    caller: "frontend_app",
-    purpose: "chat_request"
-  }
 };

@@ -17,10 +17,11 @@ Web-based cognitive interface providing structured input/output workspace for LN
 ## 2. 🧠 Architecture Summary
 
 ### Core Systems
-- **Chat Interface**: `app/components/ChatWindow.tsx` - Primary user interaction orchestration
+- **Chat Interface**: `app/components/ChatWindow.tsx` - Pure UI layer with no business logic
+- **Connection Service**: `app/services/connectionService.ts` - Clean WebSocket transport (text in → text out)
 - **Workspace Coordination**: Structured input panels, output dock, resizable layout system  
 - **State Management**: Zustand-based persistent user preferences + session workspace state
-- **Backend Integration**: API communication with 🌀 Bifröst cognitive orchestration engine
+- **Backend Integration**: Direct connection to 🌈 Rainbow Bridge → 🌀 Bifrost orchestration
 
 ### Structure
 - **`/app/`**: Next.js 13 App Router architecture (components, hooks, services, utils)
@@ -63,12 +64,13 @@ yarn build && yarn start
 
 | Purpose | File |
 |---------|------|
-| **Master Controller** | **`app/components/ChatWindow.tsx`** (Primary interface orchestration) |
+| **Master Controller** | **`app/components/ChatWindow.tsx`** (Pure UI layer - no business logic) |
+| **Connection Service** | **`app/services/connectionService.ts`** (Clean WebSocket transport) |
+| **WebSocket Hook** | **`app/hooks/useWebSocket.ts`** (Simple connection management) |
 | **Structured Input** | **`app/components/StructuredInput.tsx`** (Left panel forms) |
 | **Output Display** | **`app/components/StructuredOutputDock.tsx`** (Right panel results) |
 | **State Management** | **`app/hooks/useFriggState.ts`** (Persistent preferences) |
 | **Workspace Logic** | **`app/hooks/useWorkspaceCoordinator.ts`** (Dynamic session state) |
-| **Backend Integration** | **`app/services/responseInterpreter.ts`** (Intelligence bridge) |
 | **Global Styles** | **`app/globals.css`** (Foundation styling) |
 | Configuration | `package.json`, `tailwind.config.ts`, `next.config.js` |
 
@@ -88,8 +90,9 @@ FRIGGS-GATE/ (LNS Frontend)
 │   ├── hooks/                     # State management
 │   │   ├── useFriggState.ts       # Persistent user preferences
 │   │   └── useWorkspaceCoordinator.ts  # Dynamic workspace state
-│   ├── services/                  # Business logic
-│   │   └── responseInterpreter.ts # Backend intelligence bridge
+│   ├── services/                  # Connection layer
+│   │   ├── connectionService.ts   # Clean WebSocket transport
+│   │   └── responseInterpreter.ts # Workspace coordination
 │   ├── utils/                     # Shared utilities
 │   ├── globals.css                # Foundation styles
 │   ├── layout.tsx                 # Root layout + providers
@@ -104,7 +107,9 @@ FRIGGS-GATE/ (LNS Frontend)
 
 ## 7. 🤖 Agent Implementation Guidelines
 
-- **Master Controller**: Use `ChatWindow.tsx` for conversation orchestration and API communication
+- **Pure UI Layer**: `ChatWindow.tsx` only handles presentation - no protocol knowledge
+- **Connection Layer**: `ConnectionService` handles all WebSocket communication with Rainbow Bridge
+- **Clean Interface**: Use `sendMessage(content: string): Promise<string>` for all backend communication
 - **Workspace Panels**: Extend `StructuredInput.tsx` for new tools, `StructuredOutputDock.tsx` for results
 - **State Management**: Use `useFriggState` for persistent settings, `useWorkspaceCoordinator` for session state
 - **Styling**: Tailwind utility classes only (no separate CSS files)
@@ -112,33 +117,32 @@ FRIGGS-GATE/ (LNS Frontend)
 
 ---
 
-## 8. 🔌 WebSocket Integration
+## 8. 🔌 Rainbow Bridge Connection
 
 **Endpoint**: `ws://localhost:8001/ws` (env: `NEXT_PUBLIC_WS_BASE_URL`)
 
-**Message Format**:
+**Clean Message Format**:
 ```typescript
 {
-  question: string,
-  chat_history: Array<{human: string, ai: string}>,
-  metadata: { caller: "frontend_app", purpose: "chat_request", timestamp: ISO },
-  session: { user_id: string, context: { conversation_id: UUID, llm: string }},
-  stream: boolean
+  type: "chat_message",
+  payload: { content: string }
 }
 ```
 
 **Response Format**:
 ```typescript
 {
-  status: 'success' | 'error',
-  output?: { answer: string, run_id?: string, agent?: string },
-  message?: string
+  success: boolean,
+  content?: string,
+  error?: string
 }
 ```
 
+**Pure Transport**: Text in → Text out via `ConnectionService` interface
+
 **Connection**: Auto-connect, auto-reconnect (5 attempts, 3s delay)
 
-**Intelligence Bridge**: `responseInterpreter.ts` translates backend responses into UI actions and workspace coordination.
+**Architecture**: Friggs Gate → Rainbow Bridge → Bifrost Orchestrator
 
 ---
 
@@ -157,9 +161,10 @@ useFriggState.ts (Persistent - localStorage)     useWorkspaceCoordinator.ts (Ses
 
 ## 10. ⚠️ Development Constraints
 
-- **WebSocket only** - no REST API calls
-- **ChatWindow orchestrates** - don't bypass
-- **useWebSocket hook** - don't create direct connections  
+- **Pure transport layer** - ConnectionService only handles WebSocket communication
+- **No business logic** - ChatWindow is pure UI, no protocol knowledge
+- **Clean interface** - Text in → Text out only
+- **Rainbow Bridge protocol** - Uses new message format
 - **Tailwind styling** - no separate CSS files
 - **TypeScript strict mode** - required
 - **DOMPurify** - required for user content

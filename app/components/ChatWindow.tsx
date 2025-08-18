@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 import { EmptyState } from "./EmptyState";
 import { ChatMessageBubble, Message } from "./ChatMessageBubble";
@@ -27,24 +26,10 @@ import {
 } from "@chakra-ui/react";
 import { ArrowUpIcon } from "@chakra-ui/icons";
 import { Source } from "./SourceBubble";
-import { useWebSocket, WebSocketMessage } from "../hooks/useWebSocket";
+import { useWebSocket } from "../hooks/useWebSocket";
 
-const MODEL_TYPES = [
-  "openai_gpt_3_5_turbo",
-  "anthropic_claude_3_haiku",
-  "google_gemini_pro",
-  "fireworks_mixtral",
-  "cohere_command",
-];
 
-const defaultLlmValue =
-  MODEL_TYPES[Math.floor(Math.random() * MODEL_TYPES.length)];
-
-export function ChatWindow(props: { conversationId: string }) {
-  const conversationId = props.conversationId;
-  const userId = "user-" + Math.random().toString(36).substring(2, 11);
-
-  const searchParams = useSearchParams();
+export function ChatWindow() {
 
   // Frigg state
   const {
@@ -80,17 +65,10 @@ export function ChatWindow(props: { conversationId: string }) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [mainChatWidth, setMainChatWidth] = useState(0);
-  const [chatHistory, setChatHistory] = useState<Array<{ human: string; ai: string }>>([]);
-  const [llm, setLlm] = useState(
-    searchParams.get("llm") ?? "openai_gpt_3_5_turbo",
-  );
   
-  // WebSocket hook for real-time communication
+  // Clean WebSocket connection - just send text, get text
   const { sendMessage: sendWebSocketMessage, status: wsStatus, error: wsError, isConnected } = useWebSocket();
   
-  useEffect(() => {
-    setLlm(searchParams.get("llm") ?? defaultLlmValue);
-  }, [searchParams]);
 
   // Handle font changes
   useEffect(() => {
@@ -175,105 +153,62 @@ export function ChatWindow(props: { conversationId: string }) {
     ]);
     setIsLoading(true);
 
-    let accumulatedMessage = "";
-    let runId: string | undefined = undefined;
-    let sources: Source[] | undefined = undefined;
+    try {
+      // Send message directly to Rainbow Bridge - just text in, text out
+      const response = await sendWebSocketMessage(messageValue);
+      
+      // Setup markdown renderer
+      let renderer = new Renderer();
+      renderer.paragraph = (text) => {
+        return text + "\n";
+      };
+      renderer.list = (text) => {
+        return `${text}\n\n`;
+      };
+      renderer.listitem = (text) => {
+        return `\n• ${text}`;
+      };
+      renderer.code = (code, language) => {
+        const validLanguage = hljs.getLanguage(language || "")
+          ? language
+          : "plaintext";
+        const highlightedCode = hljs.highlight(
+          code,
+          { language: validLanguage || "plaintext" },
+        ).value;
+        return `<pre class="highlight bg-gray-700" style="padding: 5px; border-radius: 5px; overflow: auto; overflow-wrap: anywhere; white-space: pre-wrap; max-width: 100%; display: block; line-height: 1.2"><code class="${language}" style="color: ${codeHighlight.text}; font-size: 12px; ">${highlightedCode}</code></pre>`;
+      };
+      marked.setOptions({ renderer });
 
-    // Setup markdown renderer
-    let renderer = new Renderer();
-    renderer.paragraph = (text) => {
-      return text + "\n";
-    };
-    renderer.list = (text) => {
-      return `${text}\n\n`;
-    };
-    renderer.listitem = (text) => {
-      return `\n• ${text}`;
-    };
-    renderer.code = (code, language) => {
-      const validLanguage = hljs.getLanguage(language || "")
-        ? language
-        : "plaintext";
-      const highlightedCode = hljs.highlight(
-        code,
-        { language: validLanguage || "plaintext" },
-      ).value;
-      return `<pre class="highlight bg-gray-700" style="padding: 5px; border-radius: 5px; overflow: auto; overflow-wrap: anywhere; white-space: pre-wrap; max-width: 100%; display: block; line-height: 1.2"><code class="${language}" style="color: ${codeHighlight.text}; font-size: 12px; ">${highlightedCode}</code></pre>`;
-    };
-    marked.setOptions({ renderer });
-
-    // Create WebSocket message (direct BifrostState format, no input wrapper)
-    const webSocketMessage: WebSocketMessage = {
-      question: messageValue,
-      chat_history: chatHistory,
-      metadata: {
-        caller: content.metadata.caller,
-        purpose: content.metadata.purpose,
-        timestamp: new Date().toISOString(),
-      },
-      session: {
-        user_id: userId,
-        context: {
-          conversation_id: conversationId,
-          llm: llm ?? "openai_gpt_3_5_turbo",
+      const parsedResult = marked.parse(response);
+      
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: Math.random().toString(),
+          content: parsedResult.trim(),
+          role: "assistant",
         },
-      },
-      stream: false,
-    };
-
-    // Send via WebSocket
-    sendWebSocketMessage(
-      webSocketMessage,
-      (response) => {
-        // Success handler
-        const answer = response.output?.answer || content.errors.noResponse;
-        runId = response.output?.run_id || Math.random().toString();
-        
-        // Process backend response if needed
-        if (response.output) {
-          processBackendResponse({ output: response.output });
-        }
-        
-        const parsedResult = marked.parse(answer);
-        accumulatedMessage = answer;
-
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          newMessages.push({
-            id: Math.random().toString(),
-            content: parsedResult.trim(),
-            runId: runId,
-            sources: sources,
-            role: "assistant",
-          });
-          return newMessages;
-        });
-        
-        setChatHistory((prevChatHistory) => [
-          ...prevChatHistory,
-          { human: messageValue, ai: accumulatedMessage },
-        ]);
-        
-        setIsLoading(false);
-      },
-      (error) => {
-        // Error handler
-        setMessages((prevMessages) => prevMessages.slice(0, -1));
-        setIsLoading(false);
-        setInput(messageValue);
-        console.error("WebSocket error:", error);
-        
-        // Add error message to chat
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { 
-            id: Math.random().toString(), 
-            content: content.errors.generalWebsocketError.replace('{error}', error), 
-            role: "assistant" 
-          },
-        ]);
-      }
-    );
+      ]);
+      
+    } catch (error) {
+      // Remove user message on error and restore input
+      setMessages((prevMessages) => prevMessages.slice(0, -1));
+      setInput(messageValue);
+      console.error("Connection error:", error);
+      
+      // Add error message to chat
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { 
+          id: Math.random().toString(), 
+          content: content.errors.generalWebsocketError.replace('{error}', error instanceof Error ? error.message : String(error)), 
+          role: "assistant" 
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const sendInitialQuestion = async (question: string) => {
