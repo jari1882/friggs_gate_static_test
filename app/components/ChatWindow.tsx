@@ -19,6 +19,7 @@ import { colors, codeHighlight } from "../config/theme";
 import { content } from "../config/content";
 import { fontFamilies } from "../config/fonts";
 import { commands } from "../config/commands";
+import { generateDummyPDF, createPDFDownloadLink } from "../utils/pdfGenerator";
 
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -137,6 +138,57 @@ export function ChatWindow() {
     }
     let messageValue = message ?? input;
     if (messageValue === "") return;
+    
+    // Check for special commands first
+    if (messageValue in commands.special) {
+      if (messageValue === "/pdf") {
+        // Handle PDF generation command
+        setInput("");
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Math.random().toString(), content: messageValue, role: "user" },
+        ]);
+        
+        // Load actual PDF file from public directory
+        const pdfUrl = "/Life Product Model Manual v1.0.pdf";
+        let pdfBlob: Blob;
+        let downloadUrl: string;
+        
+        try {
+          const response = await fetch(pdfUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to load PDF: ${response.statusText}`);
+          }
+          pdfBlob = await response.blob();
+          downloadUrl = URL.createObjectURL(pdfBlob);
+        } catch (error) {
+          console.error("Error loading PDF:", error);
+          // Fallback to dummy PDF if file can't be loaded
+          pdfBlob = generateDummyPDF();
+          downloadUrl = createPDFDownloadLink(pdfBlob, 'friggs-gate-sample.pdf');
+        }
+        
+        // Add file message to chat
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { 
+            id: Math.random().toString(), 
+            content: "Life Product Model Manual v1.0", 
+            role: "assistant",
+            type: "file",
+            fileData: {
+              name: "Life Product Model Manual v1.0.pdf",
+              type: "application/pdf",
+              url: downloadUrl,
+              blob: pdfBlob
+            }
+          },
+        ]);
+        
+        hideEmptyStateButtons();
+        return;
+      }
+    }
     
     // Check for command aliases
     if (messageValue in commands.aliases) {

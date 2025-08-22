@@ -17,6 +17,14 @@ import {
 // HTTP API features removed for pure WebSocket implementation
 import { InlineCitation } from "./InlineCitation";
 import { useFriggState } from '../hooks/useFriggState';
+import { DownloadIcon } from '@chakra-ui/icons';
+import dynamic from 'next/dynamic';
+
+// Dynamically import PDF component to avoid SSR issues
+const PDFPreviewOverlay = dynamic(() => import('./PDFPreviewOverlay'), { 
+  ssr: false,
+  loading: () => <div>Loading PDF viewer...</div>
+});
 
 export type Message = {
   id: string;
@@ -27,6 +35,13 @@ export type Message = {
   sources?: Source[];
   name?: string;
   function_call?: { name: string };
+  type?: "file";
+  fileData?: {
+    name: string;
+    type: string;
+    url: string;
+    blob: Blob;
+  };
 };
 export type Feedback = {
   feedback_id: string;
@@ -118,10 +133,12 @@ export function ChatMessageBubble(props: {
   isMostRecent: boolean;
   messageCompleted: boolean;
 }) {
-  const { role, content, runId } = props.message;
+  const { role, content, runId, type, fileData } = props.message;
   const isUser = role === "user";
+  const isFileMessage = type === "file";
   // Feedback and trace features removed for pure WebSocket implementation
   const { isDarkMode } = useFriggState();
+  const [showPDFPreview, setShowPDFPreview] = useState(false);
 
   const cumulativeOffset = function (element: HTMLElement | null) {
     var top = 0,
@@ -239,6 +256,51 @@ export function ChatMessageBubble(props: {
       )}
 
       {/* HTTP API feedback buttons removed for pure WebSocket implementation */}
+
+      {/* File link rendering */}
+      {isFileMessage && fileData && (
+        <Box>
+          <HStack spacing={3} align="center">
+            <Button
+              variant="link"
+              color="blue.500"
+              fontWeight="medium"
+              onClick={() => {
+                if (fileData.type === "application/pdf") {
+                  setShowPDFPreview(true);
+                }
+              }}
+              _hover={{ textDecoration: "underline" }}
+            >
+              {fileData.name}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = fileData.url;
+                link.download = fileData.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              title="Download file"
+            >
+              <DownloadIcon />
+            </Button>
+          </HStack>
+        </Box>
+      )}
+
+      {/* PDF Preview Overlay */}
+      {isFileMessage && fileData && showPDFPreview && (
+        <PDFPreviewOverlay
+          isOpen={showPDFPreview}
+          onClose={() => setShowPDFPreview(false)}
+          fileData={fileData}
+        />
+      )}
 
       {!isUser && <Divider mt={4} mb={4} />}
     </VStack>
