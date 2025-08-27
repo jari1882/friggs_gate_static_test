@@ -53,7 +53,6 @@ export function ChatWindow() {
     isStructuredOutputMinimized,
     selectedTool,
     showEmptyStateButtons,
-    processBackendResponse,
     hideEmptyStateButtons,
     toggleStructuredInput,
     toggleStructuredOutput

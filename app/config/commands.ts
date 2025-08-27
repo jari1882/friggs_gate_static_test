@@ -1,9 +1,9 @@
 export const commands = {
   aliases: {
-    "/musings": "Written Musings & LPM",
+    "/life": "Life Expectancy Illustration",
     "/quote": "Submit a Quick Quote", 
-    "/lns": "Who is LNS?",
-    "/frigg": "Who is Frigg?"
+    "/lns": "life-nervous-system",
+    "/frigg": "Frigg and the Multi-Verse"
   },
   special: {
     "/pdf": "GENERATE_PDF_COMMAND",

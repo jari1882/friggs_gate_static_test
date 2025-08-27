@@ -1,7 +1,6 @@
 'use client';
 
 import { create } from 'zustand';
-import { ResponseInterpreter, UIAction } from '../services/responseInterpreter';
 
 // Centralized workspace coordination state
 // Manages panel visibility, tool selection, and cross-panel communication
@@ -24,12 +23,10 @@ interface WorkspaceState {
   toggleStructuredOutput: () => void;
   hideEmptyStateButtons: () => void;
   setFormValidationMessage: (message: string | null) => void;
-  processBackendResponse: (response: any) => void;
   resetToEmptyState: () => void;
-  executeUIAction: (action: UIAction) => void;
 }
 
-export const useWorkspaceCoordinator = create<WorkspaceState>((set, get) => ({
+export const useWorkspaceCoordinator = create<WorkspaceState>((set) => ({
   // Initial state - matches empty state requirements
   isStructuredInputMinimized: true,
   isStructuredOutputMinimized: true,
@@ -77,52 +74,6 @@ export const useWorkspaceCoordinator = create<WorkspaceState>((set, get) => ({
     set({ formValidationMessage: message });
   },
   
-  /**
-   * Process backend response through ResponseInterpreter and execute resulting actions
-   * This is the main integration point between backend responses and UI state
-   */
-  processBackendResponse: (response) => {
-    console.log('🔄 Processing backend response for UI actions');
-    
-    // Use ResponseInterpreter to determine what UI actions should be taken
-    const actions = ResponseInterpreter.interpretResponse(response);
-    
-    // Execute each action
-    actions.forEach(action => {
-      get().executeUIAction(action);
-    });
-    
-    // Always hide empty state buttons when we get a backend response
-    get().hideEmptyStateButtons();
-  },
-  
-  /**
-   * Execute a specific UI action
-   * This provides a clean separation between action detection and execution
-   */
-  executeUIAction: (action: UIAction) => {
-    console.log(`⚡ Executing UI action:`, action);
-    
-    switch (action.type) {
-      case 'OPEN_STRUCTURED_INPUT':
-        if (action.payload?.tool) {
-          get().openStructuredInput(action.payload.tool);
-        }
-        break;
-        
-      case 'OPEN_STRUCTURED_OUTPUT':
-        get().openStructuredOutput(action.payload?.content);
-        break;
-        
-      case 'SHOW_MESSAGE':
-        // Future: handle message display
-        console.log('💬 Message action:', action.payload);
-        break;
-        
-      default:
-        console.warn('⚠️ Unknown UI action type:', action.type);
-    }
-  },
   
   /**
    * Reset workspace to initial empty state

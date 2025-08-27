@@ -7,10 +7,10 @@ export const content = {
   
   buttons: {
     promptButtons: [
-      "Written Musings & LPM",
+      "Life Expectancy Illustration",
       "Submit a Quick Quote", 
-      "Who is LNS?",
-      "Who is Frigg?"
+      "life-nervous-system",
+      "Frigg and the Multi-Verse"
     ],
     send: "Send message",
     viewSource: "View Source"
