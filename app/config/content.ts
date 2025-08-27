@@ -40,7 +40,8 @@ export const content = {
     dragToDisplay: "Drag to Display",
     memories: "Memories",
     notActive: "Not Active",
-    active: "Active"
+    active: "Active",
+    llmIntegrationNotice: "LLM Integration Coming Soon"
   },
   
   navigation: {

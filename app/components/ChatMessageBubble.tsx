@@ -138,7 +138,7 @@ export function ChatMessageBubble(props: {
   const isFileMessage = type === "file";
   // Feedback and trace features removed for pure WebSocket implementation
   const { isDarkMode } = useFriggState();
-  const [showPDFPreview, setShowPDFPreview] = useState(false);
+  const [showFilePreview, setShowFilePreview] = useState(false);
 
   const cumulativeOffset = function (element: HTMLElement | null) {
     var top = 0,
@@ -266,8 +266,11 @@ export function ChatMessageBubble(props: {
               color="blue.500"
               fontWeight="medium"
               onClick={() => {
-                if (fileData.type === "application/pdf") {
-                  setShowPDFPreview(true);
+                if (fileData.type === "application/pdf" || 
+                    fileData.type.includes("spreadsheet") || 
+                    fileData.type.includes("excel") ||
+                    fileData.type.startsWith("image/")) {
+                  setShowFilePreview(true);
                 }
               }}
               _hover={{ textDecoration: "underline" }}
@@ -293,11 +296,11 @@ export function ChatMessageBubble(props: {
         </Box>
       )}
 
-      {/* PDF Preview Overlay */}
-      {isFileMessage && fileData && showPDFPreview && (
+      {/* File Preview Overlay */}
+      {isFileMessage && fileData && showFilePreview && (
         <PDFPreviewOverlay
-          isOpen={showPDFPreview}
-          onClose={() => setShowPDFPreview(false)}
+          isOpen={showFilePreview}
+          onClose={() => setShowFilePreview(false)}
           fileData={fileData}
         />
       )}

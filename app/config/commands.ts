@@ -6,6 +6,8 @@ export const commands = {
     "/frigg": "Who is Frigg?"
   },
   special: {
-    "/pdf": "GENERATE_PDF_COMMAND"
+    "/pdf": "GENERATE_PDF_COMMAND",
+    "/spreadsheet": "GENERATE_SPREADSHEET_COMMAND",
+    "/png": "GENERATE_PNG_COMMAND"
   }
 };

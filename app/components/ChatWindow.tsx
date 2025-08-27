@@ -19,7 +19,6 @@ import { colors, codeHighlight } from "../config/theme";
 import { content } from "../config/content";
 import { fontFamilies } from "../config/fonts";
 import { commands } from "../config/commands";
-import { generateDummyPDF, createPDFDownloadLink } from "../utils/pdfGenerator";
 
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -113,8 +112,8 @@ export function ChatWindow() {
   }, []);
 
   const sendMessage = async (message?: string) => {
-    console.log('sendMessage called with:', message);
-    console.log('WebSocket status:', wsStatus, 'isConnected:', isConnected, 'isLoading:', isLoading);
+    console.log('🔍 ChatWindow sendMessage called with:', message);
+    console.log('🔍 WebSocket status:', wsStatus, 'isConnected:', isConnected, 'isLoading:', isLoading);
     
     if (messageContainerRef.current) {
       messageContainerRef.current.classList.add("grow");
@@ -137,6 +136,7 @@ export function ChatWindow() {
       return;
     }
     let messageValue = message ?? input;
+    console.log('🔍 messageValue after assignment:', messageValue, 'message param:', message, 'input state:', input);
     if (messageValue === "") return;
     
     // Check for special commands first
@@ -163,9 +163,16 @@ export function ChatWindow() {
           downloadUrl = URL.createObjectURL(pdfBlob);
         } catch (error) {
           console.error("Error loading PDF:", error);
-          // Fallback to dummy PDF if file can't be loaded
-          pdfBlob = generateDummyPDF();
-          downloadUrl = createPDFDownloadLink(pdfBlob, 'friggs-gate-sample.pdf');
+          // Show error message if file can't be loaded
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { 
+              id: Math.random().toString(), 
+              content: "Error loading PDF file", 
+              role: "assistant"
+            }
+          ]);
+          return;
         }
         
         // Add file message to chat
@@ -173,7 +180,7 @@ export function ChatWindow() {
           ...prevMessages,
           { 
             id: Math.random().toString(), 
-            content: "Life Product Model Manual v1.0", 
+            content: "", 
             role: "assistant",
             type: "file",
             fileData: {
@@ -181,6 +188,116 @@ export function ChatWindow() {
               type: "application/pdf",
               url: downloadUrl,
               blob: pdfBlob
+            }
+          },
+        ]);
+        
+        hideEmptyStateButtons();
+        return;
+      }
+      
+      if (messageValue === "/spreadsheet") {
+        // Handle Spreadsheet generation command
+        setInput("");
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Math.random().toString(), content: messageValue, role: "user" },
+        ]);
+        
+        // Load actual spreadsheet file from public directory
+        const spreadsheetUrl = "/North American_Distributor_Scorecards.xlsx";
+        let spreadsheetBlob: Blob;
+        let downloadUrl: string;
+        
+        try {
+          const response = await fetch(spreadsheetUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to load spreadsheet: ${response.statusText}`);
+          }
+          spreadsheetBlob = await response.blob();
+          downloadUrl = URL.createObjectURL(spreadsheetBlob);
+        } catch (error) {
+          console.error("Error loading spreadsheet:", error);
+          // Show error message if file can't be loaded
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { 
+              id: Math.random().toString(), 
+              content: "Error loading spreadsheet file", 
+              role: "assistant"
+            }
+          ]);
+          return;
+        }
+        
+        // Add file message to chat
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { 
+            id: Math.random().toString(), 
+            content: "", 
+            role: "assistant",
+            type: "file",
+            fileData: {
+              name: "North American_Distributor_Scorecards.xlsx",
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              url: downloadUrl,
+              blob: spreadsheetBlob
+            }
+          },
+        ]);
+        
+        hideEmptyStateButtons();
+        return;
+      }
+      
+      if (messageValue === "/png") {
+        // Handle PNG image command
+        setInput("");
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Math.random().toString(), content: messageValue, role: "user" },
+        ]);
+        
+        // Load actual PNG file from public directory
+        const pngUrl = "/ChatGPT Image Aug 10, 2025, 03_36_33 PM.png";
+        let pngBlob: Blob;
+        let downloadUrl: string;
+        
+        try {
+          const response = await fetch(pngUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to load PNG: ${response.statusText}`);
+          }
+          pngBlob = await response.blob();
+          downloadUrl = URL.createObjectURL(pngBlob);
+        } catch (error) {
+          console.error("Error loading PNG:", error);
+          // Show error message if file can't be loaded
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { 
+              id: Math.random().toString(), 
+              content: "Error loading PNG file", 
+              role: "assistant"
+            }
+          ]);
+          return;
+        }
+        
+        // Add file message to chat
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { 
+            id: Math.random().toString(), 
+            content: "", 
+            role: "assistant",
+            type: "file",
+            fileData: {
+              name: "ChatGPT Image Aug 10, 2025, 03_36_33 PM.png",
+              type: "image/png",
+              url: downloadUrl,
+              blob: pngBlob
             }
           },
         ]);
@@ -207,7 +324,9 @@ export function ChatWindow() {
 
     try {
       // Send message directly to Rainbow Bridge - just text in, text out
+      console.log('🔍 About to call sendWebSocketMessage with:', messageValue);
       const response = await sendWebSocketMessage(messageValue);
+      console.log('🔍 Got response from sendWebSocketMessage:', response);
       
       // Setup markdown renderer
       let renderer = new Renderer();
@@ -416,6 +535,14 @@ export function ChatWindow() {
                         </button>
                       </div>
                     </div>
+                    
+                    {/* LLM Integration Notice */}
+                    <div className="text-center mt-2">
+                      <span className={`text-xs transition-colors duration-200`}
+                        style={{ color: isDarkMode ? themeColors.chakra.gray[500] : themeColors.chakra.gray[400] }}>
+{content.labels.llmIntegrationNotice}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Footer */}
@@ -515,6 +642,14 @@ export function ChatWindow() {
                           {isLoading ? <Spinner size="sm" /> : <ArrowUpIcon strokeWidth={3} />}
                         </button>
                       </div>
+                    </div>
+                    
+                    {/* LLM Integration Notice */}
+                    <div className="text-center mt-2">
+                      <span className={`text-xs transition-colors duration-200`}
+                        style={{ color: isDarkMode ? themeColors.chakra.gray[500] : themeColors.chakra.gray[400] }}>
+{content.labels.llmIntegrationNotice}
+                      </span>
                     </div>
                   </div>
                   

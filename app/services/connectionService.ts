@@ -84,6 +84,15 @@ export class WebSocketConnectionService implements ConnectionService {
   }
 
   async sendMessage(content: string): Promise<string> {
+    console.log('🔍 sendMessage debug:', {
+      content,
+      hasWs: !!this.ws,
+      wsReadyState: this.ws?.readyState,
+      wsReadyStateOpen: WebSocket.OPEN,
+      status: this._status,
+      wsReadyStateMatch: this.ws?.readyState === WebSocket.OPEN
+    });
+    
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       throw new Error('Not connected to Rainbow Bridge');
     }

@@ -30,10 +30,15 @@ export const useWebSocket = () => {
   }, [connectionService]);
 
   const sendMessage = async (content: string): Promise<string> => {
+    console.log('🔍 useWebSocket sendMessage called with:', content);
+    console.log('🔍 Current connection status:', status);
     try {
       setError(null);
-      return await connectionService.sendMessage(content);
+      const result = await connectionService.sendMessage(content);
+      console.log('🔍 useWebSocket got result:', result);
+      return result;
     } catch (err) {
+      console.log('🔍 useWebSocket caught error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(errorMessage);
       throw err;
