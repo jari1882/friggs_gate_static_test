@@ -8,210 +8,104 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: 'Arial', sans-serif; 
-            color: #ffffff;
+            background: url('assets/friggs-gate-background.png') center/cover no-repeat;
+            color: white; 
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             position: relative;
-            overflow-x: hidden;
         }
-        
-        /* Background Empty State - Blurred */
-        .background-empty-state {
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: url('assets/friggs-gate-background.png') center/cover no-repeat;
+            filter: blur(3px);
+            z-index: -1;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            filter: blur(2px);
-            opacity: 0.6;
-            z-index: 0;
         }
-        
-        .empty-state-grid {
-            max-width: 800px;
-            width: 100%;
-            padding: 0 2rem;
-        }
-        
-        .button-row {
-            display: flex;
-            margin-top: 25px;
-            gap: 4%;
-            width: 100%;
-        }
-        
-        .prompt-button {
-            width: 48%;
-            height: 80px;
-            background: #1F2937;
-            border: 1px solid #4B5563;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-        
-        .prompt-button:hover {
-            background: #374151;
-        }
-        
-        .prompt-button h3 {
-            font-size: 18px;
-            font-weight: 500;
-            color: #E5E7EB;
-            text-align: center;
-            margin: 0;
-        }
-        
-        /* Foreground Content */
-        .foreground {
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(1px);
-        }
-        
-        .overlay-content {
-            background: rgba(31, 41, 55, 0.95);
-            border: 1px solid #4B5563;
-            border-radius: 12px;
-            padding: 3rem;
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
+        header { text-align: center; margin-bottom: 3rem; }
+        h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 300; }
+        .subtitle { font-size: 1.2rem; opacity: 0.8; margin-bottom: 2rem; }
+        .coming-soon { 
+            background: rgba(255,255,255,0.1); 
+            padding: 2rem; 
+            border-radius: 10px; 
+            text-align: center; 
+            margin-bottom: 3rem;
             backdrop-filter: blur(10px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
-        
-        .overlay-content h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            font-weight: 300;
-            color: #ffffff;
+        .documents { 
+            background: rgba(255,255,255,0.05); 
+            padding: 2rem; 
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
         }
-        
-        .overlay-content .subtitle {
-            font-size: 1.1rem;
-            color: #D1D5DB;
-            margin-bottom: 2rem;
+        .documents h2 { margin-bottom: 1rem; }
+        .doc-list { list-style: none; }
+        .doc-list li { 
+            padding: 0.5rem 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        
-        .coming-soon {
-            margin-bottom: 2rem;
-        }
-        
-        .coming-soon h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #F3F4F6;
-        }
-        
-        .coming-soon p {
-            color: #9CA3AF;
-            font-size: 1rem;
-        }
-        
-        .documents {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #4B5563;
-        }
-        
-        .documents h2 {
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            color: #F3F4F6;
-        }
-        
-        .doc-list {
-            list-style: none;
-            text-align: left;
-        }
-        
-        .doc-list li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #374151;
-        }
-        
-        .doc-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .doc-list a {
-            color: #60A5FA;
-            text-decoration: none;
+        .doc-list li:last-child { border-bottom: none; }
+        .doc-list a { 
+            color: #87ceeb; 
+            text-decoration: none; 
             transition: color 0.3s;
-            font-size: 0.95rem;
         }
-        
-        .doc-list a:hover {
-            color: #93C5FD;
-        }
-        
-        .footer-text {
-            position: absolute;
-            bottom: 2rem;
-            text-align: center;
-            color: #6B7280;
-            font-size: 0.875rem;
+        .doc-list a:hover { color: white; }
+        footer { 
+            text-align: center; 
+            padding: 2rem; 
+            opacity: 0.6; 
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <!-- Background Empty State (Blurred) -->
-    <div class="background-empty-state">
-        <div class="empty-state-grid">
-            <div class="button-row">
-                <div class="prompt-button">
-                    <h3>Life Expectancy Illustration</h3>
-                </div>
-                <div class="prompt-button">
-                    <h3>Submit a Quick Quote</h3>
-                </div>
-            </div>
-            <div class="button-row">
-                <div class="prompt-button">
-                    <h3>life-nervous-system</h3>
-                </div>
-                <div class="prompt-button">
-                    <h3>Frigg and the Multi-Verse</h3>
-                </div>
-            </div>
+    <div class="container">
+        <header>
+            <h1>Friggs Gate</h1>
+            <p class="subtitle">Advanced Analytics & Intelligence Platform</p>
+        </header>
+        
+        <div class="coming-soon">
+            <h2>🚧 Under Construction</h2>
+            <p>We're building something amazing. Stay tuned for our full launch!</p>
+        </div>
+        
+        <div class="documents">
+            <h2>📚 Research & Publications</h2>
+            <ul class="doc-list">
+                <li><a href="documents/sample-doc.pdf">Sample Research Document</a></li>
+                <!-- Add Rod's documents here -->
+            </ul>
         </div>
     </div>
     
-    <!-- Foreground Content -->
-    <div class="foreground">
-        <div class="overlay-content">
-            <h1>Frigg's Gate</h1>
-            <p class="subtitle">Life Nervous System</p>
-            
-            <div class="coming-soon">
-                <h2>🚧 Under Construction</h2>
-                <p>We're building something amazing. Stay tuned for our full launch!</p>
-            </div>
-            
-            <div class="documents">
-                <h2>📚 Research & Publications</h2>
-                <ul class="doc-list">
-                    <li><a href="documents/sample-doc.pdf">Sample Research Document</a></li>
-                    <!-- Add Rod's documents here -->
-                </ul>
-            </div>
-        </div>
-        
-        <div class="footer-text">
-            <p>&copy; 2024 Frigg's Gate. All rights reserved.</p>
-        </div>
-    </div>
+    <footer>
+        <p>&copy; 2024 Friggs Gate. All rights reserved.</p>
+    </footer>
 </body>
 </html>
