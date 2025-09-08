@@ -2,7 +2,7 @@ export const content = {
   app: {
     title: "Life Nervous System",
     appName: "Frigg's Gate",
-    mainQuestion: "What can the Life Nervous System Do for You?"
+    mainQuestion: "What can Frigg Do for You?"
   },
   
   buttons: {
@@ -10,7 +10,7 @@ export const content = {
       "Life Expectancy Illustration",
       "Submit a Quick Quote", 
       "life-nervous-system",
-      "Frigg and the Multi-Verse"
+      "Frigg & the Multi-Verse"
     ],
     send: "Send message",
     viewSource: "View Source"
