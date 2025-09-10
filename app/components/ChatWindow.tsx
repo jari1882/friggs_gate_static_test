@@ -39,9 +39,11 @@ export function ChatWindow() {
     isDarkMode,
     selectedFont,
     memories,
+    isLLMIntegrationEnabled,
     setStructuredInputWidth,
     setStructuredOutputDockWidth,
-    selectMemory
+    selectMemory,
+    toggleLLMIntegration
   } = useFriggState();
 
   // Theme colors
@@ -535,12 +537,19 @@ export function ChatWindow() {
                       </div>
                     </div>
                     
-                    {/* LLM Integration Notice */}
+                    {/* LLM Integration Toggle */}
                     <div className="text-center mt-2">
-                      <span className={`text-xs transition-colors duration-200`}
-                        style={{ color: isDarkMode ? themeColors.chakra.gray[500] : themeColors.chakra.gray[400] }}>
-{content.labels.llmIntegrationNotice}
-                      </span>
+                      <button 
+                        onClick={toggleLLMIntegration}
+                        className="text-xs transition-colors duration-200 hover:opacity-80 cursor-pointer"
+                      >
+                        <span>LLM Integration: </span>
+                        <span style={{ 
+                          color: isLLMIntegrationEnabled ? '#006400' : '#8B0000'
+                        }}>
+                          {isLLMIntegrationEnabled ? 'ON' : 'OFF'}
+                        </span>
+                      </button>
                     </div>
                   </div>
 
@@ -643,12 +652,19 @@ export function ChatWindow() {
                       </div>
                     </div>
                     
-                    {/* LLM Integration Notice */}
+                    {/* LLM Integration Toggle */}
                     <div className="text-center mt-2">
-                      <span className={`text-xs transition-colors duration-200`}
-                        style={{ color: isDarkMode ? themeColors.chakra.gray[500] : themeColors.chakra.gray[400] }}>
-{content.labels.llmIntegrationNotice}
-                      </span>
+                      <button 
+                        onClick={toggleLLMIntegration}
+                        className="text-xs transition-colors duration-200 hover:opacity-80 cursor-pointer"
+                      >
+                        <span>LLM Integration: </span>
+                        <span style={{ 
+                          color: isLLMIntegrationEnabled ? '#006400' : '#8B0000'
+                        }}>
+                          {isLLMIntegrationEnabled ? 'ON' : 'OFF'}
+                        </span>
+                      </button>
                     </div>
                   </div>
                   

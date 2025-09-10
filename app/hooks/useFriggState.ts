@@ -15,6 +15,9 @@ interface FriggState {
   isDarkMode: boolean;
   selectedFont: string;
   
+  // LLM Integration state
+  isLLMIntegrationEnabled: boolean;
+  
   // Layout actions
   setStructuredInputWidth: (width: number) => void;
   setStructuredOutputDockWidth: (width: number) => void;
@@ -26,6 +29,10 @@ interface FriggState {
   toggleTheme: () => void;
   setTheme: (isDark: boolean) => void;
   setFont: (font: string) => void;
+  
+  // LLM Integration actions
+  toggleLLMIntegration: () => void;
+  setLLMIntegration: (enabled: boolean) => void;
   
   // Memory state
   memories: string[];
@@ -48,6 +55,9 @@ export const useFriggState = create<FriggState>((set) => ({
   isDarkMode: false,
   selectedFont: 'inter',
   
+  // Initial LLM Integration state
+  isLLMIntegrationEnabled: true,
+  
   // Layout actions
   setStructuredInputWidth: (width) => set({ structuredInputWidth: width }),
   setStructuredOutputDockWidth: (width) => set({ structuredOutputDockWidth: width }),
@@ -59,6 +69,10 @@ export const useFriggState = create<FriggState>((set) => ({
   toggleTheme: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
   setTheme: (isDark) => set({ isDarkMode: isDark }),
   setFont: (font) => set({ selectedFont: font }),
+  
+  // LLM Integration actions
+  toggleLLMIntegration: () => set((state) => ({ isLLMIntegrationEnabled: !state.isLLMIntegrationEnabled })),
+  setLLMIntegration: (enabled) => set({ isLLMIntegrationEnabled: enabled }),
   
   // Initial memory state
   memories: Array(15).fill(content.labels.notActive),
