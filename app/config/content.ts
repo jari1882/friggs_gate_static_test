@@ -51,10 +51,16 @@ export const content = {
   
   music: {
     songs: [
-      "Song 1", "Song 2", "Song 3", "Song 4", "Song 5",
-      "Song 6", "Song 7", "Song 8", "Song 9", "Song 10",
-      "Song 11", "Song 12", "Song 13", "Song 14", "Song 15",
-      "Song 16", "Song 17", "Song 18", "Song 19", "Song 20"
+      "AYYBO - Rizz",
+      "AYYBO - Tekno",
+      "AYYBO - Underground",
+      "Dom Dolla - Take It",
+      "Dom Dolla - San Frandisco",
+      "Dom Dolla - Pump The Brakes",
+      "Mau P - Beats for the Underground",
+      "Sofi Tukker - Best Friend",
+      "Sofi Tukker - Purple Hat",
+      "Sofi Tukker - Drinkee"
     ]
   },
   
