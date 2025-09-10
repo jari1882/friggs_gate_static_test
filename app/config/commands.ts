@@ -1,7 +1,7 @@
 export const commands = {
   aliases: {
-    "/life": "Life Expectancy Illustration",
     "/quote": "Submit a Quick Quote", 
+    "/life": "Life Expectancy Illustration",
     "/lns": "life-nervous-system",
     "/frigg": "Frigg and the Multi-Verse"
   },
