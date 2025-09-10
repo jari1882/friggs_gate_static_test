@@ -1,6 +1,6 @@
 export const content = {
   app: {
-    title: "Life Nervous System",
+    title: "life-nervous-system",
     appName: "Frigg's Gate",
     mainQuestion: "What can Frigg Do for You?"
   },
