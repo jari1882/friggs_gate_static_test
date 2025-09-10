@@ -7,10 +7,10 @@ export const content = {
   
   buttons: {
     promptButtons: [
-      "Life Expectancy Illustration",
       "Submit a Quick Quote", 
-      "life-nervous-system",
-      "Frigg & the Multi-Verse"
+      "Life Expectancy vs. Simulated Coverage Confidence Intervals",
+      "About Us",
+      "Who is Frigg?"
     ],
     send: "Send message",
     viewSource: "View Source"
