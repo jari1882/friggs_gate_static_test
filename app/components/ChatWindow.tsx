@@ -554,6 +554,7 @@ export function ChatWindow() {
                   </div>
 
                   {/* Footer */}
+                  {false && ( // TODO: Set to true to show View Source button
                   <footer className="flex justify-center p-4">
                     <a
                       href={content.navigation.githubLink}
@@ -573,6 +574,7 @@ export function ChatWindow() {
                       <span>{content.buttons.viewSource}</span>
                     </a>
                   </footer>
+                  )}
                 </>
               ) : (
                 /* Empty state - properly centered */
@@ -672,6 +674,7 @@ export function ChatWindow() {
                   <div className="flex-1"></div>
                   
                   {/* Footer */}
+                  {false && ( // TODO: Set to true to show View Source button
                   <footer className="flex-shrink-0 flex justify-center p-4">
                     <a
                       href={content.navigation.githubLink}
@@ -691,6 +694,7 @@ export function ChatWindow() {
                       <span>{content.buttons.viewSource}</span>
                     </a>
                   </footer>
+                  )}
                 </>
               )}
             </>
