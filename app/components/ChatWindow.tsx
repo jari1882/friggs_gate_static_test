@@ -9,6 +9,7 @@ import MemorySlider from "./MemorySlider";
 import StructuredInput from "./StructuredInput";
 import ThemeToggle from "./ThemeToggle";
 import StructuredOutputDock from "./StructuredOutputDock";
+import MusicTicker from "./MusicTicker";
 import { useFriggState } from "../hooks/useFriggState";
 import { useWorkspaceCoordinator } from "../hooks/useWorkspaceCoordinator";
 import { marked } from "marked";
@@ -553,7 +554,10 @@ export function ChatWindow() {
                     </div>
                   </div>
 
-                  {/* Footer */}
+                  {/* Music Ticker */}
+                  <MusicTicker />
+                  
+                  {/* Hidden Footer - View Source */}
                   {false && ( // TODO: Set to true to show View Source button
                   <footer className="flex justify-center p-4">
                     <a
@@ -673,7 +677,12 @@ export function ChatWindow() {
                   {/* Bottom spacer */}
                   <div className="flex-1"></div>
                   
-                  {/* Footer */}
+                  {/* Music Ticker */}
+                  <div className="flex-shrink-0">
+                    <MusicTicker />
+                  </div>
+                  
+                  {/* Hidden Footer - View Source */}
                   {false && ( // TODO: Set to true to show View Source button
                   <footer className="flex-shrink-0 flex justify-center p-4">
                     <a

@@ -13,7 +13,8 @@ export const content = {
       "Who is Frigg?"
     ],
     send: "Send message",
-    viewSource: "View Source"
+    viewSource: "View Source",
+    musicTickerTitle: "Top House We Are Listening To:"
   },
   
   placeholders: {
@@ -46,6 +47,15 @@ export const content = {
   
   navigation: {
     githubLink: "https://github.com/jari1882/friggs-gate"
+  },
+  
+  music: {
+    songs: [
+      "Song 1", "Song 2", "Song 3", "Song 4", "Song 5",
+      "Song 6", "Song 7", "Song 8", "Song 9", "Song 10",
+      "Song 11", "Song 12", "Song 13", "Song 14", "Song 15",
+      "Song 16", "Song 17", "Song 18", "Song 19", "Song 20"
+    ]
   },
   
   errors: {
