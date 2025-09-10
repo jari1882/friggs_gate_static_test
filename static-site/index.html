@@ -39,34 +39,58 @@
             z-index: -1;
         }
         .container { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: relative;
             min-height: 100vh;
-            padding: 2rem;
+            overflow: hidden;
         }
-        .modal {
-            background: #4a5568;
-            border: 1px solid #718096;
-            border-radius: 12px;
-            padding: 3rem;
-            max-width: 500px;
-            width: 100%;
+        
+        /* Construction tape stripes */
+        .construction-tape {
+            position: absolute;
+            top: 50%;
+            left: -10%;
+            right: -10%;
+            height: 200px;
+            background: repeating-linear-gradient(
+                45deg,
+                #FFD700 0px,
+                #FFD700 30px,
+                #000000 30px,
+                #000000 60px
+            );
+            transform: translateY(-50%) rotate(-15deg);
+            z-index: 10;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .content-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
         }
-        .modal h1 {
+        
+        .content-overlay h1 {
             font-size: 2.5rem;
             font-weight: 400;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        .content-overlay p {
+            font-size: 1.2rem;
             color: #ffffff;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
-        .modal p {
-            font-size: 1.1rem;
-            color: #cccccc;
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
-        }
+        
         .publications-link {
             display: inline-block;
             background: #305cde;
@@ -79,17 +103,23 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
+            text-shadow: none;
         }
+        
         .publications-link:hover {
             background: #2747b8;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 25px rgba(48, 92, 222, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(48, 92, 222, 0.4);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="modal">
+        <!-- Diagonal construction tape -->
+        <div class="construction-tape"></div>
+        
+        <!-- Content overlay -->
+        <div class="content-overlay">
             <h1>Friggs Gate</h1>
             <p>Coming Soon</p>
             <a href="documents/" class="publications-link">
