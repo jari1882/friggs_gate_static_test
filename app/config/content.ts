@@ -2,7 +2,7 @@ export const content = {
   app: {
     title: "life-nervous-system",
     appName: "Frigg's Gate",
-    mainQuestion: "What Can the life-nervous-system Do for You?"
+    mainQuestion: "What Can the <strong>life-nervous-system</strong> Do for You?"
   },
   
   buttons: {

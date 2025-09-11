@@ -455,8 +455,8 @@ export function ChatWindow() {
                   {/* Main question */}
                   <div className="flex-shrink-0 p-6">
                     <h2 className={`text-2xl font-medium text-center mb-6 transition-colors duration-200`}
-                      style={{ color: themeColors.text }}>
-                      {content.app.mainQuestion}
+                      style={{ color: themeColors.text }}
+                      dangerouslySetInnerHTML={{ __html: content.app.mainQuestion }}>
                     </h2>
                   </div>
 
@@ -590,8 +590,8 @@ export function ChatWindow() {
                   <div className="flex-shrink-0 px-4">
                     {/* Main question */}
                     <h2 className={`text-2xl font-medium text-center mb-12 transition-colors duration-200`}
-                      style={{ color: themeColors.text }}>
-                      {content.app.mainQuestion}
+                      style={{ color: themeColors.text }}
+                      dangerouslySetInnerHTML={{ __html: content.app.mainQuestion }}>
                     </h2>
                     
                     {/* EmptyState buttons */}
