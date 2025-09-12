@@ -44,22 +44,39 @@
             overflow: hidden;
         }
         
-        /* Super thin construction tape */
+        /* Construction tape with text */
         .construction-tape-1 {
             position: absolute;
             top: 40%;
             left: -20%;
             right: -20%;
-            height: 20px;
-            background: repeating-linear-gradient(
-                45deg,
-                #FFD700 0px,
+            height: 60px;
+            background: linear-gradient(
+                to bottom,
+                #000000 0px,
+                #000000 8px,
+                #FFD700 8px,
                 #FFD700 15px,
-                #000000 15px,
-                #000000 30px
+                #FFD700 45px,
+                #FFD700 52px,
+                #000000 52px,
+                #000000 60px
             );
             transform: rotate(-12deg);
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .construction-tape-1::before {
+            content: 'UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  ';
+            color: #000000;
+            font-weight: bold;
+            font-size: 14px;
+            white-space: nowrap;
+            animation: scroll-text 30s linear infinite;
         }
         
         .construction-tape-2 {
@@ -67,16 +84,42 @@
             top: 60%;
             left: -20%;
             right: -20%;
-            height: 20px;
-            background: repeating-linear-gradient(
-                45deg,
-                #FFD700 0px,
+            height: 60px;
+            background: linear-gradient(
+                to bottom,
+                #000000 0px,
+                #000000 8px,
+                #FFD700 8px,
                 #FFD700 15px,
-                #000000 15px,
-                #000000 30px
+                #FFD700 45px,
+                #FFD700 52px,
+                #000000 52px,
+                #000000 60px
             );
             transform: rotate(-8deg);
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .construction-tape-2::before {
+            content: 'CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  ';
+            color: #000000;
+            font-weight: bold;
+            font-size: 14px;
+            white-space: nowrap;
+            animation: scroll-text 25s linear infinite;
+        }
+        
+        @keyframes scroll-text {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
         }
     </style>
 </head>
