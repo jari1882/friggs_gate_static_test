@@ -44,20 +44,15 @@
             overflow: hidden;
         }
         
-        /* Super thin construction tape */
+        /* Construction tape using image */
         .construction-tape-1 {
             position: absolute;
             top: 40%;
             left: -20%;
             right: -20%;
-            height: 20px;
-            background: repeating-linear-gradient(
-                45deg,
-                #FFD700 0px,
-                #FFD700 15px,
-                #000000 15px,
-                #000000 30px
-            );
+            height: 60px;
+            background: url('assets/construction-tape.png') repeat-x;
+            background-size: auto 100%;
             transform: rotate(-12deg);
             z-index: 10;
         }
@@ -67,14 +62,9 @@
             top: 60%;
             left: -20%;
             right: -20%;
-            height: 20px;
-            background: repeating-linear-gradient(
-                45deg,
-                #FFD700 0px,
-                #FFD700 15px,
-                #000000 15px,
-                #000000 30px
-            );
+            height: 60px;
+            background: url('assets/construction-tape.png') repeat-x;
+            background-size: auto 100%;
             transform: rotate(-8deg);
             z-index: 10;
         }
