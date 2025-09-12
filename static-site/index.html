@@ -50,33 +50,50 @@
             top: 40%;
             left: -20%;
             right: -20%;
-            height: 60px;
-            background: linear-gradient(
-                to bottom,
-                #000000 0px,
-                #000000 8px,
-                #FFD700 8px,
-                #FFD700 15px,
-                #FFD700 45px,
-                #FFD700 52px,
-                #000000 52px,
-                #000000 60px
-            );
+            height: 45px;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    #FFD700 0px,
+                    #FFD700 8px,
+                    #000000 8px,
+                    #000000 16px
+                ) 0px 0px,
+                repeating-linear-gradient(
+                    45deg,
+                    #FFD700 0px,
+                    #FFD700 8px,
+                    #000000 8px,
+                    #000000 16px
+                ) 0px 35px,
+                linear-gradient(
+                    to bottom,
+                    transparent 0px,
+                    transparent 10px,
+                    #FFD700 10px,
+                    #FFD700 35px,
+                    transparent 35px
+                );
+            background-size: 16px 10px, 16px 10px, 100% 100%;
             transform: rotate(-12deg);
             z-index: 10;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             overflow: hidden;
+            font-family: 'Arial Black', 'Helvetica', sans-serif;
         }
         
         .construction-tape-1::before {
-            content: 'UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  UNDER CONSTRUCTION  ';
+            content: 'UNDER CONSTRUCTION    UNDER CONSTRUCTION    UNDER CONSTRUCTION    UNDER CONSTRUCTION    UNDER CONSTRUCTION    UNDER CONSTRUCTION    UNDER CONSTRUCTION    UNDER CONSTRUCTION    ';
             color: #000000;
-            font-weight: bold;
-            font-size: 14px;
+            font-weight: 900;
+            font-size: 12px;
             white-space: nowrap;
-            animation: scroll-text 30s linear infinite;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: scroll-text 40s linear infinite;
+            width: 200%;
         }
         
         .construction-tape-2 {
@@ -84,33 +101,50 @@
             top: 60%;
             left: -20%;
             right: -20%;
-            height: 60px;
-            background: linear-gradient(
-                to bottom,
-                #000000 0px,
-                #000000 8px,
-                #FFD700 8px,
-                #FFD700 15px,
-                #FFD700 45px,
-                #FFD700 52px,
-                #000000 52px,
-                #000000 60px
-            );
+            height: 45px;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    #FFD700 0px,
+                    #FFD700 8px,
+                    #000000 8px,
+                    #000000 16px
+                ) 0px 0px,
+                repeating-linear-gradient(
+                    45deg,
+                    #FFD700 0px,
+                    #FFD700 8px,
+                    #000000 8px,
+                    #000000 16px
+                ) 0px 35px,
+                linear-gradient(
+                    to bottom,
+                    transparent 0px,
+                    transparent 10px,
+                    #FFD700 10px,
+                    #FFD700 35px,
+                    transparent 35px
+                );
+            background-size: 16px 10px, 16px 10px, 100% 100%;
             transform: rotate(-8deg);
             z-index: 10;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             overflow: hidden;
+            font-family: 'Arial Black', 'Helvetica', sans-serif;
         }
         
         .construction-tape-2::before {
-            content: 'CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  CAUTION  ';
+            content: 'CAUTION      CAUTION      CAUTION      CAUTION      CAUTION      CAUTION      CAUTION      CAUTION      CAUTION      CAUTION      CAUTION      ';
             color: #000000;
-            font-weight: bold;
-            font-size: 14px;
+            font-weight: 900;
+            font-size: 12px;
             white-space: nowrap;
-            animation: scroll-text 25s linear infinite;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: scroll-text 35s linear infinite;
+            width: 200%;
         }
         
         @keyframes scroll-text {
