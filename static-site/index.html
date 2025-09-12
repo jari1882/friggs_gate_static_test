@@ -44,13 +44,12 @@
             overflow: hidden;
         }
         
-        /* Realistic construction tape */
+        /* Realistic construction tape with classic pattern */
         .construction-tape {
             position: absolute;
             left: -20%;
             right: -20%;
             height: 30px;
-            background: linear-gradient(to bottom, #FFD700 0%, #F5C842 50%, #FFD700 100%);
             border-top: 2px solid #E6C200;
             border-bottom: 2px solid #E6C200;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
@@ -65,6 +64,13 @@
             text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
             letter-spacing: 2px;
             overflow: hidden;
+            background: repeating-linear-gradient(
+                45deg,
+                #FFD700 0px,
+                #FFD700 15px,
+                #000000 15px,
+                #000000 30px
+            );
         }
         
         .construction-tape-1 {
@@ -78,13 +84,11 @@
         }
         
         .tape-text {
-            white-space: nowrap;
-            animation: scroll-text 15s linear infinite;
-        }
-        
-        @keyframes scroll-text {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+            background: #FFD700;
+            padding: 5px 20px;
+            border-radius: 2px;
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
