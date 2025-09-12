@@ -44,42 +44,22 @@
             overflow: hidden;
         }
         
-        /* Real construction barrier tape */
+        /* Super thin construction tape */
         .construction-tape-1 {
             position: absolute;
             top: 40%;
             left: -20%;
             right: -20%;
-            height: 50px;
-            background: 
-                repeating-linear-gradient(
-                    -45deg,
-                    #FFD700 0px,
-                    #FFD700 25px,
-                    #FF0000 25px,
-                    #FF0000 50px
-                );
+            height: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                #FFD700 0px,
+                #FFD700 15px,
+                #000000 15px,
+                #000000 30px
+            );
             transform: rotate(-12deg);
             z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            overflow: hidden;
-            border: 2px solid #000000;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        .construction-tape-1::before {
-            content: 'DANGER • KEEP OUT • DANGER • KEEP OUT • DANGER • KEEP OUT • DANGER • KEEP OUT • DANGER • KEEP OUT • DANGER • KEEP OUT • ';
-            color: #000000;
-            font-weight: 900;
-            font-size: 14px;
-            font-family: 'Arial', sans-serif;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
-            animation: scroll-text 50s linear infinite;
         }
         
         .construction-tape-2 {
@@ -87,45 +67,16 @@
             top: 60%;
             left: -20%;
             right: -20%;
-            height: 50px;
-            background: 
-                repeating-linear-gradient(
-                    45deg,
-                    #FFD700 0px,
-                    #FFD700 20px,
-                    #000000 20px,
-                    #000000 40px
-                );
+            height: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                #FFD700 0px,
+                #FFD700 15px,
+                #000000 15px,
+                #000000 30px
+            );
             transform: rotate(-8deg);
             z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            overflow: hidden;
-            border: 2px solid #000000;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        .construction-tape-2::before {
-            content: 'CAUTION • DO NOT ENTER • CAUTION • DO NOT ENTER • CAUTION • DO NOT ENTER • CAUTION • DO NOT ENTER • CAUTION • DO NOT ENTER • ';
-            color: #FFFFFF;
-            font-weight: 900;
-            font-size: 14px;
-            font-family: 'Arial', sans-serif;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 0px #000000;
-            animation: scroll-text 45s linear infinite;
-        }
-        
-        @keyframes scroll-text {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
         }
     </style>
 </head>
