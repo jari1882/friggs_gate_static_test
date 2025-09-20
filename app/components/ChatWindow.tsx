@@ -389,7 +389,8 @@ export function ChatWindow() {
     console.log('Question received:', question);
     console.log('Current WebSocket state:', { wsStatus, isConnected, error: wsError });
     try {
-      await sendMessage(question);
+      setInput(question);
+      await sendMessage();
     } catch (e) {
       console.error("Error sending initial question:", e);
     }

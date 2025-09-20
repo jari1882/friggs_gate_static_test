@@ -16,7 +16,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
   const themeColors = isDarkMode ? colors.dark : colors.light;
   
   const handleClick = (e: MouseEvent) => {
-    const text = (e.target as HTMLDivElement).innerText;
+    const text = (e.currentTarget as HTMLDivElement).innerText;
     console.log('Button clicked, sending:', text);
     props.onChoice(text);
   };
