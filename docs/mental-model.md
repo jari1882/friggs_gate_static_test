@@ -14,15 +14,14 @@ This guide provides a practical roadmap for modifying the Frigg's Gate codebase.
 | Global styles | `app/globals.css` | Any CSS rule |
 | UI state management | `app/hooks/useFriggState.ts` | Store properties |
 | Workspace logic | `app/hooks/useWorkspaceCoordinator.ts` | Tool coordination |
-| Backend response handling | `app/services/responseInterpreter.ts` | Agent detection patterns |
 | App-wide constants | `app/utils/constants.tsx` | Configuration values |
+| Content/theme config | `app/config/*.ts` | Centralized configuration objects |
 | Theme/font controls | `app/components/ThemeToggle.tsx` or `FontSelector.tsx` | Component logic |
 | API communication | `app/components/ChatWindow.tsx` | `sendMessage()` function, payload structure |
-| Backend intelligence signals | `app/services/responseInterpreter.ts` | `detectAgents()`, `mapAgentsToActions()` |
 | Panel rendering order | `app/components/ChatWindow.tsx` | Main flex container JSX |
-| Layout boundaries/constraints | Individual components | `useResizeObserver`, min/max width logic |
+| Layout boundaries/constraints | Individual components | Native `ResizeObserver`, min/max width logic |
 | Build/dev scripts | `package.json` | `scripts` section |
-| Environment config | `.env.example` | Variable definitions |
+| Environment config | `.env.gcp.yaml.example` | Backend API keys, service URLs |
 
 ---
 
@@ -32,14 +31,15 @@ This guide provides a practical roadmap for modifying the Frigg's Gate codebase.
 friggs-gate/
 ├── app/                          # All application code lives here
 │   ├── components/              # UI building blocks
-│   ├── hooks/                   # State management & custom logic  
+│   ├── config/                  # Centralized configuration objects
+│   ├── hooks/                   # State management & custom logic
 │   ├── services/               # Business logic & API handling
 │   ├── utils/                  # Shared utilities & constants
 │   ├── globals.css            # Global styles (viewport, fonts, scrollbars)
 │   ├── layout.tsx             # HTML scaffold & providers
 │   └── page.tsx               # Entry point (renders ChatWindow)
 ├── docs/                        # Documentation & guides
-├── public/                     # Static assets (favicon, images)  
+├── public/                     # Static assets (favicon, images)
 └── [config files]             # Next.js, Tailwind, TypeScript setup
 ```
 
@@ -56,10 +56,127 @@ When you run `yarn dev` and open the app, here's what actually happens:
 6. **Bootstrapping** → Next.js hydration process
 
 **Browser Execution Flow**:
-1. **Next.js** serves the initial HTML from `layout.tsx` + `page.tsx`  
+1. **Next.js** serves the initial HTML from `layout.tsx` + `page.tsx`
 2. **Browser** parses HTML and starts loading CSS/JS bundles
 3. **React** hydrates the static HTML into interactive components
 4. **ChatWindow** becomes the live, interactive application
+
+---
+
+## 🔧 Configuration Directory
+
+**Location**: `app/config/`
+
+**Purpose**: Centralized configuration objects for content, theming, commands, and fonts
+
+All hardcoded strings, colors, and configuration values are extracted into dedicated config files to make updates easier and avoid scattering magic values throughout components.
+
+**Files**:
+
+### `content.ts` - UI Text & Labels
+**What it contains**: All user-facing text, labels, placeholders, error messages, tooltips
+
+**When to edit**:
+- Changing any UI copy or error messages
+- Updating button labels or placeholders
+- Modifying app name or navigation text
+
+**Example structure**:
+```typescript
+export const content = {
+  app: {
+    appName: "Frigg's Gate",
+    title: "Frigg's Gate",
+    mainQuestion: "What would you like to know?"
+  },
+  buttons: {
+    send: "Send message",
+    viewSource: "View Source"
+  },
+  errors: {
+    websocketNotConnected: "Connection lost...",
+    generalWebsocketError: "Error: {error}"
+  },
+  placeholders: {
+    chatInput: "Ask a question..."
+  }
+  // ... more organized text
+};
+```
+
+### `theme.ts` - Colors & Design Tokens
+**What it contains**: Color schemes for light/dark modes, code highlighting colors
+
+**When to edit**:
+- Adjusting brand colors
+- Customizing dark mode palette
+- Changing syntax highlighting colors
+
+**Example structure**:
+```typescript
+export const colors = {
+  light: {
+    background: '#ffffff',
+    text: '#374151',
+    link: '#2d7bd4',
+    // ... more colors
+  },
+  dark: {
+    background: '#1a1a1a',
+    text: '#e5e7eb',
+    // ... more colors
+  }
+};
+```
+
+### `commands.ts` - Special Command Definitions
+**What it contains**: Slash command mappings and aliases
+
+**When to edit**:
+- Adding new special commands (like `/pdf`, `/spreadsheet`)
+- Creating command aliases
+- Defining command behavior triggers
+
+**Example structure**:
+```typescript
+export const commands = {
+  special: {
+    '/pdf': 'Load PDF demo',
+    '/spreadsheet': 'Load spreadsheet demo',
+    '/png': 'Load image demo'
+  },
+  aliases: {
+    '/help': '/assistant',
+    // ... more aliases
+  }
+};
+```
+
+### `fonts.ts` - Font Family Configurations
+**What it contains**: Available font family options and their CSS values
+
+**When to edit**:
+- Adding new font options to the font selector
+- Updating font family fallbacks
+- Organizing font presets
+
+**Example structure**:
+```typescript
+export const fontFamilies = {
+  inter: 'Inter, sans-serif',
+  roboto: 'Roboto, sans-serif',
+  firaCode: 'Fira Code, Consolas, Monaco, monospace',
+  // ... more font families
+};
+```
+
+**Import pattern** (used throughout components):
+```typescript
+import { content } from '../config/content';
+import { colors } from '../config/theme';
+import { commands } from '../config/commands';
+import { fontFamilies } from '../config/fonts';
+```
 
 ---
 
@@ -81,17 +198,16 @@ When you run `yarn dev` and open the app, here's what actually happens:
 ```
 ChatWindow (foundation layer)
 ├── Header Strip (flex-shrink-0)
-│   ├── Title: "Frigg's Gate"
-│   ├── FontSelector
+│   ├── Title: "Frigg's Gate" + Logo
 │   ├── ThemeToggle
 │   └── MemorySlider
 └── Main Content (flex flex-row flex-1)
-    ├── Left Panel: StructuredInput (conditional)
+    ├── Left Panel: StructuredInput (always rendered, handles own minimization)
     ├── Chat Area (flex-1, consumes remaining space)
     │   ├── Question Header
     │   ├── Message Container (flex-col-reverse for bottom-up)
     │   └── Input Area (textarea + send button)
-    └── Right Panel: StructuredOutputDock (conditional)
+    └── Right Panel: StructuredOutputDock (conditional render)
 ```
 
 **Key sections**:
@@ -123,7 +239,7 @@ return (
 
 **Common edits**:
 - **Add new tool type**: Add to `ToolType` type and `toolComponents` object
-- **Modify existing forms**: Edit `QuickQuoteForm` or `LifeExpectancyForm` components
+- **Modify existing forms**: Edit `renderQuickQuoteForm()` or `renderLifeExpectancyForm()` inline helpers
 - **Change validation**: Update validation functions for each tool
 - **Add form fields**: Extend form state objects
 
@@ -132,28 +248,31 @@ return (
 // Tool type definitions
 type ToolType = 'QuickQuote' | 'LifeExpectancy';  // Add new tools here
 
-// Form components
-const QuickQuoteForm = () => {
-  // Add new fields here
+// Form rendering helpers (inline, not separate components)
+const renderQuickQuoteForm = () => {
+  // JSX for Quick Quote inputs
 };
 
-// Tool mapping
-const toolComponents = {
-  QuickQuote: QuickQuoteForm,
-  LifeExpectancy: LifeExpectancyForm,
-  // Add new tool components here
+const renderLifeExpectancyForm = () => {
+  // JSX for Life Expectancy inputs
 };
 
-// Validation logic  
-const validateQuickQuote = (data: QuickQuoteData) => {
-  // Add validation rules here
+// Validation logic
+const validateQuickQuoteForm = (): boolean => {
+  const { age, gender, smoker, coverageAmount } = quickQuoteParams;
+  return age !== '' && gender !== '' && smoker !== '' && coverageAmount !== '';
+};
+
+const validateLifeExpectancyForm = (): boolean => {
+  const { age, gender, lifestyle } = lifeExpectancyParams;
+  return age !== '' && gender !== '' && lifestyle !== '';
 };
 ```
 
 **Physical Panel Behavior**:
 - **Rendering Order**: Always renders first in flex-row layout (leftmost position)
-- **Resizable**: Drag right edge to resize (200px min, 60% screen max)  
-- **Minimizable**: Click toggle to collapse to 12px-wide strip
+- **Resizable**: Drag right edge to resize (constraint: `Math.max(200, Math.min(window.innerWidth - 50, newWidth))`)
+- **Minimizable**: Click toggle to collapse to ~48px strip (Tailwind w-12)
 - **Auto-focus**: When tool is selected, first input gets focus
 - **Responsive**: Hides content when chat area gets too narrow
 - **Resize Handle**: Absolute positioned overlay at right edge with hover states
@@ -316,32 +435,26 @@ Think of the system as having **5 distinct information radio frequencies**:
 
 ## 🔄 Backend Integration Editing Guide
 
-### 🧠 responseInterpreter.ts - Intelligence Bridge
+### 🔗 connectionService.ts - WebSocket Transport
 
-**Location**: `app/services/responseInterpreter.ts`
+**Location**: `app/services/connectionService.ts`
 
-**What it does**: Translates backend responses into UI actions
+**What it does**: Manages WebSocket connection lifecycle and message passing
 
 **Common edits**:
-- **Add new agent detection**: Insert new keyword patterns
-- **Map new UI actions**: Add action types and handlers
-- **Modify existing patterns**: Update regex or keyword matching
+- **Change backend endpoint**: Update WebSocket URL configuration
+- **Adjust retry logic**: Modify reconnection attempts and delays
+- **Handle connection events**: Edit connection lifecycle handlers
 
 **Key sections**:
 ```typescript
-// Add new agent detection patterns
-const detectAgents = (response: string) => {
-  if (response.includes('new keyword')) {
-    return ['new-agent'];
+// WebSocket connection management
+export class WebSocketConnectionService {
+  // Connection and message handling
+  async sendMessage(content: string): Promise<string> {
+    // Send message and await response
   }
-};
-
-// Map agents to UI actions
-const mapAgentsToActions = (agents: string[]) => {
-  if (agents.includes('new-agent')) {
-    return [{ type: 'OPEN_NEW_PANEL' }];
-  }
-};
+}
 ```
 
 ---
@@ -371,7 +484,7 @@ Frigg's Gate uses a **minimal, utility-first approach** with just two styling la
 
 **Key Characteristics**:
 - **No component-specific CSS files** - everything styled inline via Tailwind classes
-- **No CSS-in-JS libraries** - pure Tailwind + minimal global CSS
+- **Minimal CSS-in-JS** - MusicTicker uses `<style jsx>` for animations; otherwise pure Tailwind + global CSS
 - **Co-location** - styles live directly with components in `className` attributes
 
 **Common patterns**:
@@ -483,8 +596,8 @@ When editing components, you're working across four distinct JavaScript layers:
 #### 🏭 4. Business Logic Layer
 **What it handles**: Domain-specific rules and coordination
 - Form validation logic
-- API request/response formatting  
-- Backend response interpretation (`responseInterpreter.ts`)
+- API request/response formatting
+- WebSocket communication (`connectionService.ts`)
 - Tool coordination between UI and workspace state
 
 **Where to edit**: Service files (`services/` directory) and coordinator hooks
@@ -502,7 +615,6 @@ When editing components, you're working across four distinct JavaScript layers:
 1. Create new component in components/
 2. Add to parent component (usually ChatWindow)
 3. Add any state management needed
-4. Update responseInterpreter if backend-triggered
 ```
 
 ### 4. **Environment & Security Setup**
@@ -576,11 +688,10 @@ When editing components, you're working across four distinct JavaScript layers:
 
 ### Creating a New Tool/Form
 1. **StructuredInput.tsx**: Add new tool type to `ToolType` union type
-2. **StructuredInput.tsx**: Create new form component (follow `QuickQuoteForm` pattern)
+2. **StructuredInput.tsx**: Create new form rendering helper (follow `renderQuickQuoteForm()` pattern)
 3. **StructuredInput.tsx**: Add to `toolComponents` object mapping
-4. **StructuredInput.tsx**: Add validation function (follow `validateQuickQuote` pattern)
+4. **StructuredInput.tsx**: Add validation function (follow `validateQuickQuoteForm()` pattern)
 5. **useWorkspaceCoordinator.ts**: Add tool to `selectedTool` type union
-6. **responseInterpreter.ts**: Add detection pattern if triggered by chat responses
 
 ### Modifying Visual Appearance  
 1. **globals.css**: For app-wide changes (fonts, colors, base elements)
@@ -627,7 +738,7 @@ When making changes, think through these **ripple effects**:
 | **🎛️ UI State** | `useFriggState.ts`, components | Panels, themes, layout coordination |
 | **📝 Forms & Input** | `StructuredInput.tsx` | Tool forms, validation, user input |
 | **📤 Data Display** | `StructuredOutputDock.tsx`, `ChatMessageBubble.tsx` | Results, content rendering |
-| **🧠 Intelligence** | `responseInterpreter.ts`, `useWorkspaceCoordinator.ts` | AI signals, automation |
+| **🧠 Intelligence** | `useWorkspaceCoordinator.ts` | Tool coordination, workspace state |
 | **🎨 Visual & Theme** | Component styling, `globals.css` | Appearance, animations, accessibility |
 | **⚙️ System** | `layout.tsx`, `page.tsx`, `useWebSocket.ts` | Setup, connections, performance |
 
@@ -635,10 +746,10 @@ When making changes, think through these **ripple effects**:
 
 **"I want users to be able to..."**
 - **Send different types of messages** → Conversation behavior → `ChatWindow.tsx`
-- **Customize the interface** → UI State behavior → `useFriggState.ts` 
+- **Customize the interface** → UI State behavior → `useFriggState.ts`
 - **Fill out new forms** → Forms & Input behavior → `StructuredInput.tsx`
 - **See results differently** → Data Display behavior → `StructuredOutputDock.tsx`
-- **Have the UI respond to AI** → Intelligence behavior → `responseInterpreter.ts`
+- **Coordinate tools and workspace** → Intelligence behavior → `useWorkspaceCoordinator.ts`
 - **Change how things look** → Visual & Theme behavior → Component styling
 - **Fix app performance** → System behavior → `layout.tsx`, hooks
 
@@ -647,9 +758,9 @@ When making changes, think through these **ripple effects**:
 **Remember**: Frigg's Gate uses a **behavior-driven, component-based architecture**. Most changes happen in:
 
 - **`ChatWindow.tsx`** - Conversation orchestration
-- **State hook files** - UI state and workspace coordination  
+- **State hook files** - UI state and workspace coordination
 - **Individual components** - Specific UI behaviors
-- **`responseInterpreter.ts`** - Intelligence coordination
+- **`connectionService.ts`** - Backend communication
 
 **The golden rule**: Identify the behavior type first, then edit the corresponding primary file. This approach ensures you're working in the right place from the start.
 
