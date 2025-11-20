@@ -120,8 +120,8 @@ export default function PDFViewerPage() {
                 >
                   <Page
                     pageNumber={pageNumber}
-                    renderAnnotationLayer={true}
-                    renderTextLayer={true}
+                    renderAnnotationLayer={false}
+                    renderTextLayer={false}
                     width={Math.min(typeof window !== 'undefined' ? window.innerWidth * 0.8 : 800, 900)}
                   />
                 </Box>
